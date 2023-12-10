@@ -1,5 +1,5 @@
 
-import os, input_handler, map_charge
+import os, input_handler, json_handler
 
 from utilities import *
 from start_characters import *
@@ -7,7 +7,6 @@ from start_characters import *
 class engine:
 
     def __init__(self):
-        self.player = start_characters.return_player()
         self.message = ''
         self.item = {
             'sprite': '',
@@ -21,15 +20,33 @@ class engine:
             'in_use': False
         }
         self.end_exe = False
-        self.map = map_charge.charge_map()
+
+        self.map_class = json_handler.load_random_map()
+        self.map = self.map_class['map']
+        self.player = start_characters.return_player((self.map_class['player_spawn_coors'])[0], (self.map_class['player_spawn_coors'])[1])
+        self.enemy = start_characters.return_enemy()
+
+        self.player_around = []
 
     def run(self):
         os.system('cls')
 
+        # enemy print
+        self.map[self.enemy.x][self.enemy.y] = self.enemy.sprite
+
         # player print
         self.map[self.player.x][self.player.y] = self.player.sprite
 
-        # print(f'Coordenadas del jugador: ({self.player.x}, {self.player.y})')
+        self.player_around = [
+            self.map[self.player.x - 1][self.player.y], # up
+            self.map[self.player.x + 1][self.player.y], # down
+            self.map[self.player.x][self.player.y - 1], # left
+            self.map[self.player.x][self.player.y + 1] # right
+        ]
+
+        """
+        La idea es validar si la siguiente coordenada es piso. Solo no se me ocurre cómo validarlo.
+        """
 
         # map print
         for line in self.map:
@@ -39,26 +56,46 @@ class engine:
 
             print(floor)
 
-        print(f'Player coors: ({self.player.x}, {self.player.y})')
         print(f'Inventario del jugador: {self.player.inventory}')
 
         # move control
-        move_vector = input_handler.valid_move(self.player.x, self.player.y, self.map)
+        move_vector = input_handler.valid_move(self.player.x, self.player.y, self.map, self.player_around)
 
         # vertical movement
         if move_vector['direc'] in ['w', 's']:
+            if self.map[self.player.x + move_vector['move']][self.player.y] != ' ': # verifying if the next coor is a "wall"
 
-            # player's movement function
-            self.movement('x', self.player.x + move_vector['move'], move_vector['move'])
+                # player's movement function
+                self.movement('x', self.player.x + move_vector['move'], move_vector['move'])
+                print(move_vector['msg'])
+
+            else:
+                print('''
+##################################################
+Aviso: Es imposible desplazarse por esa dirección.
+##################################################
+''')
 
         # horizontal movement
         elif move_vector['direc'] in ['a', 'd']:
+            if self.map[self.player.x][self.player.y + move_vector['move']] != ' ': # verifying if the next coor is a "wall"
 
-            # player's movement function
-            self.movement('y', self.player.y + move_vector['move'], move_vector['move'])
+                # player's movement function
+                self.movement('y', self.player.y + move_vector['move'], move_vector['move'])
+                print(move_vector['msg'])
 
-        print(move_vector['msg'])
-        print(f'Player current coors: ({self.player.x}, {self.player.y})')
+            else:
+                print('''
+##################################################
+Aviso: Es imposible desplazarse por esa dirección.
+##################################################
+''')
+
+        # print(f'Player current coors: ({self.player.x}, {self.player.y})')
+
+        '''a = input('¿Cambiar de mapa?')
+        if a == 'y':
+            self.map = map_charge.charge_map()      '''      
 
         input()
 
@@ -113,7 +150,9 @@ class engine:
 
         if axis == 'x': # in horizontal axis
             # little check if where the player is an object/item or just floor
-            if self.room_inv['in_use'] == True and ((self.room_inv['coor_x'] < self.player.x) or (self.room_inv['coor_x'] > self.player.x)): # if it's an object/item
+            if self.room_inv['in_use'] == True and\
+                ((self.room_inv['coor_x'] < self.player.x) or\
+                    ((self.room_inv['coor_x'] > self.player.x))): # if it's an object/item
                 self.left_item(self.room_inv['item'], self.room_inv['coor_x'], self.room_inv['coor_y'])
                 self.room_inv_save(None, 0, 0, in_use = False)
             else: # if it's floor
@@ -121,7 +160,9 @@ class engine:
 
         else: # in vertical axis
             # little check if where the player is an object/item or just floor
-            if self.room_inv['in_use'] == True and ((self.room_inv['coor_y'] < self.player.y) or (self.room_inv['coor_y'] > self.player.y)): # if it's an object/item
+            if self.room_inv['in_use'] == True and\
+                ((self.room_inv['coor_y'] < self.player.y) or\
+                  (self.room_inv['coor_y'] > self.player.y)): # if it's an object/item
                 self.left_item(self.room_inv['item'], self.room_inv['coor_x'], self.room_inv['coor_y'])
                 self.room_inv_save(None, 0, 0, in_use = False)
             else: # if it's floor
