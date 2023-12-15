@@ -2,8 +2,8 @@
     {
         "name": "test_map",
         "player_spawn_coors": [
-            5,
-            5
+            2,
+            1
         ],
         "enemys_spwan_coors": [
             []

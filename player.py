@@ -7,4 +7,5 @@ class player:
         self.sprite = sprite
         self.x = x
         self.y = y
+        self.inv_limit = 0
         self.inventory = []

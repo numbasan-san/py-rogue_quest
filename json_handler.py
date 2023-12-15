@@ -11,7 +11,7 @@ mapas = []
 mapas.append(
     {
         'name': 'test_map',
-        'player_spawn_coors': (5, 5),
+        'player_spawn_coors': (2, 1),
         'enemys_spwan_coors': [()],
         'items_spwan_coors': [()],
         'map': maps_handler.set_map('test_map.txt')
