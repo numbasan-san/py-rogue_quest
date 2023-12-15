@@ -12,13 +12,17 @@ mapas.append(
     {
         'name': 'test_map',
         'player_spawn_coors': (5, 5),
+        'enemys_spwan_coors': [()],
+        'items_spwan_coors': [()],
         'map': maps_handler.set_map('test_map.txt')
     }
 )
 mapas.append(
     {
         'name': 'mapa copy',
-        'player_spawn_coors': (1, 1),
+        'player_spawn_coors': (1, 2),
+        'enemys_spwan_coors': [()],
+        'items_spwan_coors': [()],
         'map': maps_handler.set_map('mapa copy.txt')
     }
 )
@@ -28,7 +32,7 @@ with open('maps_data.json', 'w') as file:
 
 def load_random_map():
     MAP = random.choice(json.load(open('maps_data.json', 'r')))
-    return MAP
+    return json.load(open('maps_data.json', 'r'))[0]
 
 # with open('data.json', 'r') as file:
 #     data = json.load(file)

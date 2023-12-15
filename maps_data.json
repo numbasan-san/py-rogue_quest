@@ -5,6 +5,12 @@
             5,
             5
         ],
+        "enemys_spwan_coors": [
+            []
+        ],
+        "items_spwan_coors": [
+            []
+        ],
         "map": [
             [
                 "\u250f",
@@ -269,7 +275,13 @@
         "name": "mapa copy",
         "player_spawn_coors": [
             1,
-            1
+            2
+        ],
+        "enemys_spwan_coors": [
+            []
+        ],
+        "items_spwan_coors": [
+            []
         ],
         "map": [
             [

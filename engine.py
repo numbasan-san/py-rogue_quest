@@ -1,18 +1,13 @@
 
-import os, input_handler, json_handler
+import os, input_handler, json_handler, random
+import basic_item, enemy
 
 from utilities import *
-from start_characters import *
+from start_world_elements import *
 
 class engine:
 
     def __init__(self):
-        self.message = ''
-        self.item = {
-            'sprite': '',
-            'coor_x': 0,
-            'coor_y': 0
-        }
         self.room_inv = {
             'item': None,
             'coor_x': 0,
@@ -21,27 +16,30 @@ class engine:
         }
         self.end_exe = False
 
-        self.map_class = json_handler.load_random_map()
+        self.map_class = (json_handler.load_random_map())
         self.map = self.map_class['map']
         self.player = start_characters.return_player((self.map_class['player_spawn_coors'])[0], (self.map_class['player_spawn_coors'])[1])
-        self.enemy = start_characters.return_enemy()
+        self.enemy = random.choice(start_characters.return_enemy())
+        self.item = random.choice(start_items.return_items())
 
-        self.player_around = []
+        # item print
+        self.map[self.item.x][self.item.y] = self.item
+
+        # enemy print
+        self.map[self.enemy.x][self.enemy.y] = self.enemy
 
     def run(self):
         os.system('cls')
 
-        # enemy print
-        self.map[self.enemy.x][self.enemy.y] = self.enemy.sprite
-
         # player print
         self.map[self.player.x][self.player.y] = self.player.sprite
 
-        self.player_around = [
+        # player flanks check
+        player_around = [
             self.map[self.player.x - 1][self.player.y], # up
             self.map[self.player.x + 1][self.player.y], # down
             self.map[self.player.x][self.player.y - 1], # left
-            self.map[self.player.x][self.player.y + 1] # right
+            self.map[self.player.x][self.player.y + 1], # right
         ]
 
         """
@@ -52,44 +50,48 @@ class engine:
         for line in self.map:
             floor = ''
             for square in line:
+                if type(square) == basic_item.basic_item:
+                    square = self.item.sprite
+                if type(square) == enemy.enemy:
+                    square = self.enemy.sprite
                 floor += square
 
             print(floor)
 
-        print(f'Inventario del jugador: {self.player.inventory}')
+        # inventory's print
+        inventory = ''
+        for i in range(len(self.player.inventory)):
+            slot = (self.player.inventory[i].sprite + ', ') if i < (len(self.player.inventory) - 1) else self.player.inventory[i].sprite
+            inventory += slot
+
+        print(f'Inventario del jugador: [{inventory}]')
 
         # move control
-        move_vector = input_handler.valid_move(self.player.x, self.player.y, self.map, self.player_around)
+        move_vector = input_handler.valid_move(self.player.x, self.player.y, self.map, player_around)
 
         # vertical movement
         if move_vector['direc'] in ['w', 's']:
-            if self.map[self.player.x + move_vector['move']][self.player.y] != ' ': # verifying if the next coor is a "wall"
+            sq = self.map[self.player.x + move_vector['move']][self.player.y]
+            if type(sq) == str or type(sq) == basic_item.basic_item: # verifying if the next coor is a "wall"
 
                 # player's movement function
                 self.movement('x', self.player.x + move_vector['move'], move_vector['move'])
                 print(move_vector['msg'])
 
             else:
-                print('''
-##################################################
-Aviso: Es imposible desplazarse por esa dirección.
-##################################################
-''')
+                print('\n##################################################\nAviso: Es imposible desplazarse por esa dirección.\n##################################################\n')
 
         # horizontal movement
         elif move_vector['direc'] in ['a', 'd']:
-            if self.map[self.player.x][self.player.y + move_vector['move']] != ' ': # verifying if the next coor is a "wall"
+            sq = self.map[self.player.x][self.player.y + move_vector['move']]
+            if type(sq) == str or type(sq) == basic_item.basic_item: # verifying if the next coor is a "wall"
 
                 # player's movement function
                 self.movement('y', self.player.y + move_vector['move'], move_vector['move'])
                 print(move_vector['msg'])
 
             else:
-                print('''
-##################################################
-Aviso: Es imposible desplazarse por esa dirección.
-##################################################
-''')
+                print('\n##################################################\nAviso: Es imposible desplazarse por esa dirección.\n##################################################\n')
 
         # print(f'Player current coors: ({self.player.x}, {self.player.y})')
 
@@ -109,14 +111,6 @@ Aviso: Es imposible desplazarse por esa dirección.
         self.room_inv['coor_x'] = x
         self.room_inv['coor_y'] = y
         self.room_inv['in_use'] = in_use
-        # print(f'El objeto {self.room_inv["item"]} está en las coordenadas ({self.room_inv["coor_x"]}, {self.room_inv["coor_y"]})')
-
-    # to take a item to the player
-    def grab_item(self, x, y):
-        
-        if self.map[x][y] != '.':
-            take_item = True if (utilities.opciones('¿Tomar item?', ['y', 'n']) == 'y') else False
-            return take_item
 
     # the player's movement
     def movement(self, axis, new_coor, move_vector):
@@ -130,12 +124,15 @@ Aviso: Es imposible desplazarse por esa dirección.
         item = (self.map[new_player_coor][player_coor_y]) if axis == 'x' else (self.map[player_coor_x][new_player_coor])
 
         # if in the way there is an object/item
-        if item != '.':
-            
+        if type(item) == basic_item.basic_item:
             # if the player want, or not, take the item
-            take_item = True if (utilities.opciones('¿Tomar item?', ['y', 'n']) == 'y') else False
+            take_item = True if (utilities.opciones(f'¿Tomar {item.name}?', ['y', 'n']) == 'y') else False
             if take_item: # if the object/item is taken
                 self.player.inventory.append(item)
+                if axis == 'x':
+                    self.map[new_player_coor][player_coor_y] = '.'
+                else:
+                    self.map[player_coor_x][new_player_coor] = '.'
             else: # if not
                 if axis == 'x':
                     self.room_inv_save(item, new_player_coor, player_coor_y)

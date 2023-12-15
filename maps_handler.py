@@ -1,6 +1,4 @@
 
-import os, random
-
 PATH = "mapas/"
 
 def count_line(archive_path): # Counting lines of txt map selected.

@@ -6,7 +6,7 @@ def valid_move(x, y, map, player_around):
     len_x = (len(map[x]) - 1)
     len_y = (len(map) - 1)
 
-    walls = ['━', '┃', '┏', '┓', '┗', '┛', '┣', '┫', '┳', '┻', '╋']
+    walls = ['━', '┃', '┏', '┓', '┗', '┛', '┣', '┫', '┳', '┻', '╋', ' ']
 
     # directions validation
     move_opt = ['w', 'a', 's', 'd']
