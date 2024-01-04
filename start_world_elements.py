@@ -6,8 +6,8 @@ from enemies import *
 class start_characters:
 
     def return_player(x, y):
-        # hp, defense, sprite, x, y
-        return player(100, 10, '@', x, y)
+        # hp, damage, defense, sprite, x, y
+        return player(100, 5, 10, '@', x, y)
     
     def return_enemy():
         return [
@@ -20,4 +20,5 @@ class start_items:
         return [
             potion.potion.start_potion(),
             potion_power.potion_power.start_potion_power(),
+            sword.sword.start_sword(),
         ]

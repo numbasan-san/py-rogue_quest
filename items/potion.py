@@ -5,7 +5,7 @@ class potion:
 
     # name, sprite, x, y, tag
     def start_potion(x = 1, y = 1):
-        return basic_item('potion', '+', x, y, 'item')
+        return basic_item('potion', '+', x, y)
 
     def item_func():
         print('Se debería recuperar la salud del jugador si se usa.')
