@@ -21,22 +21,13 @@ class engine:
         self.map_class = (json_handler.load_random_map())
         self.map = self.map_class['map']
         self.player = start_characters.return_player((self.map_class['player_spawn_coors'])[0], (self.map_class['player_spawn_coors'])[1])
-        self.enemy = random.choice(start_characters.return_enemy())
         
         # items print
-        for i in range(len(self.map_class['items_spawn_coors'])):
-            self.item = random.choice(start_items.return_items()) # A random item selected
+        self.load_entity(self.map_class, start_items.return_items(), 'items')
 
-            # setting coors for each "item spawn coors" in the map in turn
-            self.item.x = (((self.map_class['items_spawn_coors'])[i]))[0]
-            self.item.y = (((self.map_class['items_spawn_coors'])[i]))[1]
-
-            # item print
-            self.map[self.item.x][self.item.y] = self.item
-        # items print end #
-
-        # enemy print
-        self.map[self.enemy.x][self.enemy.y] = self.enemy
+        # enemies print
+        self.load_entity(self.map_class, start_characters.return_enemy(), 'enemys')
+        # enemies print end #
 
     def run(self):
         os.system('cls')
@@ -64,7 +55,7 @@ class engine:
             inventory += slot
         # inventory's print end #
 
-        print(f'Inventario del jugador: [{inventory}]')
+        print(f'Inventario del jugador: [{inventory}] inventario usado: {len(self.player.inventory)}')
 
         # actions menu
         text = "1. Mirar inventario.\n2. Moverse."
@@ -99,17 +90,15 @@ class engine:
 
         # vertical movement
         if move_vector['direc'] in ['w', 's']:
-            moved_to = self.player.x + move_vector['move']
-            self.load_move('x', move_vector, moved_to, self.player.y, moved_to)
+            self.load_move('x', move_vector, (self.player.x + move_vector['move']), self.player.y, (self.player.x + move_vector['move']))
         # vertical movement end #
 
         # horizontal movement
         elif move_vector['direc'] in ['a', 'd']:
-            moved_to = self.player.y + move_vector['move']
-            self.load_move('y', move_vector, self.player.x, moved_to, moved_to)
+            self.load_move('y', move_vector, self.player.x, (self.player.y + move_vector['move']), (self.player.y + move_vector['move']))
         # horizontal movement end #
 
-    def load_move(self, axis, move_vector, x, y, move):
+    def load_move(self, axis, move_vector, x, y, move): 
         sq = self.map[x][y]
         if type(sq) != enemy.enemy: # verifying if the next coor is an enemy
 
@@ -121,7 +110,7 @@ class engine:
             self.combat_logic(sq)
 
     # to save a item in the room
-    def room_inv_save(self, item, x, y, in_use = True):
+    def room_inv_save(self, item, x, y, in_use):
         self.room_inv['item'] = item
         self.room_inv['coor_x'] = x
         self.room_inv['coor_y'] = y
@@ -140,14 +129,12 @@ class engine:
 
         # if in the way there is an object/item
         if type(thing) == basic_item.basic_item:
-
-            # if the player want, or not, take the item
-            take_item = True if (utilities.opciones(f'¿Tomar {thing.name}?', ['y', 'n']) == 'y') else False
-
-            if take_item and\
-                 (len(self.player.inventory) < self.player.inv_limit): # if the object/item is taken and the inventory is in it's limit
+            
+            # if the object/item is taken and the inventory is in it's limit
+            if (len(self.player.inventory) < self.player.inv_limit):
                 
                 self.player.inventory.append(thing)
+                print(f'{thing.name} fue tomado.')
 
                 if axis == 'x':
                     self.map[new_player_coor][player_coor_y] = '.'
@@ -156,29 +143,26 @@ class engine:
 
             else: # if not
                 if axis == 'x':
-                    self.room_inv_save(thing, new_player_coor, player_coor_y)
+                    self.room_inv_save(thing, new_player_coor, player_coor_y, True)
                 else:
-                    self.room_inv_save(thing, player_coor_x, new_player_coor)
+                    self.room_inv_save(thing, player_coor_x, new_player_coor, True)
 
         # player's axis move
         if axis == 'x': # in horizontal axis
+            print("player's axis move")
             self.player.x = new_player_coor
+            self.floor_item_check(self.player.x, (self.player.x - move_vector), self.player.y, self.room_inv['coor_x'], (self.room_inv['coor_x'], self.room_inv['coor_y']))
         else: # in vertical axis
+            print("player's axis move")
             self.player.y = new_player_coor
+            self.floor_item_check(self.player.y, self.player.x, (self.player.y - move_vector), self.room_inv['coor_y'], (self.room_inv['coor_x'], self.room_inv['coor_y']))
         # player's axis move end #
 
-        if axis == 'x': # in horizontal axis
-            self.floor_item_check(self.player.x, (self.player.x - move_vector), self.player.y, self.room_inv['coor_x'])
-        else: # in vertical axis
-            self.floor_item_check(self.player.y, self.player.x, (self.player.y - move_vector), self.room_inv['coor_y'])
-
     # to check if where the player is an object/item or just floor
-    def floor_item_check(self, used_player_axis, player_x, player_y, room_inv_axis):
-        if self.room_inv['in_use'] == True and\
-            ((room_inv_axis < used_player_axis) or\
-                ((room_inv_axis > used_player_axis))): # if it's an object/item
-            self.map[room_inv_axis][room_inv_axis] = self.room_inv['item']
-            self.room_inv_save(None, 0, 0, in_use = False)
+    def floor_item_check(self, used_player_axis, player_x, player_y, room_inv_axis, room_coors):
+        if self.room_inv['in_use'] == True and ((room_inv_axis < used_player_axis) or ((room_inv_axis > used_player_axis))): # if it's an object/item
+            self.map[room_coors[0]][room_coors[1]] = self.room_inv['item']
+            self.room_inv_save(None, 0, 0, False)
         else: # if it's floor
             self.map[player_x][player_y] = '.'
 
@@ -189,3 +173,14 @@ class engine:
 
         print('Tanto tú como el enemigo se dieron un madrazo cruzado.')
         print(f'Salud del enemigo: {enemy.hp}.\nSalud del jugador: {self.player.hp}.\n')
+
+    def load_entity(self, map_coors, start_entities, load_entity):
+        for i in range(len(map_coors[load_entity + '_spawn_coors'])):
+            entity = random.choice(start_entities) # A random entity selected
+
+            # setting coors for each "entity spawn coors" in the map in turn
+            entity.x = (((map_coors[load_entity + '_spawn_coors'])[i]))[0]
+            entity.y = (((map_coors[load_entity + '_spawn_coors'])[i]))[1]
+
+            # entity print
+            self.map[entity.x][entity.y] = entity
