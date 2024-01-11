@@ -1,8 +1,10 @@
 
-import os, input_handler, json_handler, random
-import time
-import basic_item, enemy
+import os, input_handler, random
+import map_things.json_handler as json_handler
+import items.basic_item as basic_item
+import npc.enemy as enemy
 
+from getpass import getpass
 from utilities import *
 from start_world_elements import *
 
@@ -55,7 +57,7 @@ class engine:
             inventory += slot
         # inventory's print end #
 
-        print(f'Inventario del jugador: [{inventory}] inventario usado: {len(self.player.inventory)}')
+        print(f'Inventario del jugador: [{inventory}]')
 
         # actions menu
         text = "1. Mirar inventario.\n2. Moverse."
@@ -68,14 +70,18 @@ class engine:
                     print(f'{i + 1}. {(self.player.inventory[i]).name}.')
             else:
                 print('VACÍO')
+            print()
+
+            action = utilities.pregunta('Elija qué usar (0 para usar un objeto): ', 0, len(self.player.inventory))
 
         if action == '2': # move choice
             self.move_selection()
         # actions menu end #
 
-        input()
+        getpass('')
 
-    def move_selection(self):
+    # the name explains it self
+    def move_selection(self):   
 
         # player flanks check
         player_around = [
@@ -84,6 +90,8 @@ class engine:
             self.map[self.player.x][self.player.y - 1], # left
             self.map[self.player.x][self.player.y + 1], # right
         ]
+
+        print()
 
         # move control
         move_vector = input_handler.valid_move(self.player.x, self.player.y, self.map, player_around)
@@ -98,16 +106,18 @@ class engine:
             self.load_move('y', move_vector, self.player.x, (self.player.y + move_vector['move']), (self.player.y + move_vector['move']))
         # horizontal movement end #
 
+    # execute the movement and everything that entails
     def load_move(self, axis, move_vector, x, y, move): 
         sq = self.map[x][y]
         if type(sq) != enemy.enemy: # verifying if the next coor is an enemy
 
             # player's movement function
+            utilities.print_effect('\n' + move_vector['msg'] + '\n')
             self.movement(axis, move, move_vector['move'])
-            print(move_vector['msg'])
 
         else:
-            self.combat_logic(sq)
+            self.combat_logic(self.player, sq)
+            self.combat_logic(sq, self.player)
 
     # to save a item in the room
     def room_inv_save(self, item, x, y, in_use):
@@ -134,7 +144,7 @@ class engine:
             if (len(self.player.inventory) < self.player.inv_limit):
                 
                 self.player.inventory.append(thing)
-                print(f'{thing.name} fue tomado.')
+                utilities.print_effect(f'{thing.name} fue tomado.\n')
 
                 if axis == 'x':
                     self.map[new_player_coor][player_coor_y] = '.'
@@ -149,31 +159,40 @@ class engine:
 
         # player's axis move
         if axis == 'x': # in horizontal axis
-            print("player's axis move")
             self.player.x = new_player_coor
-            self.floor_item_check(self.player.x, (self.player.x - move_vector), self.player.y, self.room_inv['coor_x'], (self.room_inv['coor_x'], self.room_inv['coor_y']))
+            self.floor_item_check(self.player.x, (self.player.x - move_vector), self.player.y, 
+                                  self.room_inv['coor_x'], (self.room_inv['coor_x'], self.room_inv['coor_y'])
+                                 )
         else: # in vertical axis
-            print("player's axis move")
             self.player.y = new_player_coor
-            self.floor_item_check(self.player.y, self.player.x, (self.player.y - move_vector), self.room_inv['coor_y'], (self.room_inv['coor_x'], self.room_inv['coor_y']))
+            self.floor_item_check(self.player.y, self.player.x, 
+                                  (self.player.y - move_vector), self.room_inv['coor_y'], 
+                                  (self.room_inv['coor_x'], self.room_inv['coor_y'])
+                                 )
         # player's axis move end #
 
     # to check if where the player is an object/item or just floor
     def floor_item_check(self, used_player_axis, player_x, player_y, room_inv_axis, room_coors):
-        if self.room_inv['in_use'] == True and ((room_inv_axis < used_player_axis) or ((room_inv_axis > used_player_axis))): # if it's an object/item
+        if self.room_inv['in_use'] == True and\
+              ((room_inv_axis < used_player_axis) or ((room_inv_axis > used_player_axis))): # if it's an object/item
             self.map[room_coors[0]][room_coors[1]] = self.room_inv['item']
             self.room_inv_save(None, 0, 0, False)
         else: # if it's floor
             self.map[player_x][player_y] = '.'
 
-    def combat_logic(self, enemy):
-        print(f'Coordenadas del enemigo a atacar: ({enemy.x}, {enemy.y}).\nNombre del enemio: {enemy.name}.\n')
-        enemy.hp -= self.player.damage
-        self.player.hp -= enemy.damage
+    # the name explains it self
+    def combat_logic(self, attacker, victim):
 
-        print('Tanto tú como el enemigo se dieron un madrazo cruzado.')
-        print(f'Salud del enemigo: {enemy.hp}.\nSalud del jugador: {self.player.hp}.\n')
+        damage = int(attacker.damage / (2 ** (victim.defense / attacker.damage))) # + weapon.critic
+        victim.hp -= damage
+        
+        attacker_name = attacker.name if type(attacker) != type(self.player) else 'player'
+        victim_name = victim.name if type(victim) != type(self.player) else 'player'
 
+        utilities.print_effect(f'\nEl/La {attacker_name} le metió un madrazo a {victim_name}.\n')
+        utilities.print_effect(f'Salud de la victima del madrazo: {victim.hp}.\n\n')
+
+    # to load entity
     def load_entity(self, map_coors, start_entities, load_entity):
         for i in range(len(map_coors[load_entity + '_spawn_coors'])):
             entity = random.choice(start_entities) # A random entity selected

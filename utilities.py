@@ -1,4 +1,6 @@
 
+import sys, time
+
 class utilities:
 
     @staticmethod
@@ -9,8 +11,17 @@ class utilities:
         return valor
     
     @staticmethod
-    def pregunta(texto, min, max, key):
-        valor = key
-        while (valor < min) or (valor > max):
-            valor = int(input(texto + '(Por favor, seleccione una de las opciones dadas). '))
-        return valor
+    def pregunta(texto, min, max):
+        valor = input(texto)
+        while True:
+            if valor.isdigit():
+                valor = int(valor)
+                if (valor >= min) and (valor <= max):
+                    return valor
+            valor = input(texto)
+
+    def print_effect(s):
+        for c in s:
+            sys.stdout.write(c)
+            sys.stdout.flush()
+            time.sleep(0.05)

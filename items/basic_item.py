@@ -1,0 +1,9 @@
+
+class basic_item:
+
+    def __init__(self, name, sprite, x, y):
+        self.name = name
+        self.sprite = sprite
+        self.x = x
+        self.y = y
+        # self.func = func

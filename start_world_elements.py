@@ -1,17 +1,20 @@
 
 from player import *
-from items import *
-from enemies import *
+from items.consumables import *
+from items.equipment import *
+from npc.enemies import *
 
 class start_characters:
 
     def return_player(x, y):
         # hp, damage, defense, sprite, x, y
-        return player(100, 5, 10, '@', x, y)
+        return player(100, 25, 10, '@', x, y)
     
     def return_enemy():
         return [
-            standar_enemy.standar_enemy.start_standar_enemy(),
+            kelpie.kelpie.start_kelpie(),
+            banshee.banshee.start_banshee(),
+            ghoul.ghoul.start_ghoul(),
         ]
 
 class start_items:
