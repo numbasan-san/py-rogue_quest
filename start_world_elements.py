@@ -21,7 +21,7 @@ class start_items:
 
     def return_items():
         return [
-            potion.potion.start_potion(),
+            potion.potion(),
             potion_power.potion_power.start_potion_power(),
             sword.sword.start_sword(),
         ]

@@ -2,6 +2,7 @@
 import os, input_handler, random
 import map_things.json_handler as json_handler
 import items.basic_item as basic_item
+import items.basic_equip as basic_equip
 import npc.enemy as enemy
 
 from getpass import getpass
@@ -25,10 +26,13 @@ class engine:
         self.player = start_characters.return_player((self.map_class['player_spawn_coors'])[0], (self.map_class['player_spawn_coors'])[1])
         
         # items print
-        self.load_entity(self.map_class, start_items.return_items(), 'items')
+        items = start_items.return_items()
+        self.load_entity(self.map_class, items, 'items')
+        # items print end #
 
         # enemies print
-        self.load_entity(self.map_class, start_characters.return_enemy(), 'enemys')
+        enemy = start_characters.return_enemy()
+        self.load_entity(self.map_class, enemy, 'enemys')
         # enemies print end #
 
     def run(self):
@@ -40,15 +44,16 @@ class engine:
         # map print
         for line in self.map:
             floor = ''
-            for square in line:
-                if type(square) == basic_item.basic_item:
-                    square = square.sprite
-                if type(square) == enemy.enemy:
-                    square = square.sprite
-                floor += square
-
+            for sq in line:
+                if isinstance(sq, (basic_item.basic_item, enemy.enemy, basic_equip.basic_equip)):
+                    sq = sq.sprite
+                floor += sq
             print(floor)
         # map print end #
+
+        # print player stats
+        print(f'HP: {self.player.hp}/{self.player.max_hp}. Atk: {self.player.damage} Def: {self.player.defense}.')
+        # print player stats end #
 
         # inventory's print
         inventory = ''
@@ -72,7 +77,15 @@ class engine:
                 print('VACÍO')
             print()
 
-            action = utilities.pregunta('Elija qué usar (0 para usar un objeto): ', 0, len(self.player.inventory))
+            opt = (utilities.pregunta('Elija qué usar (0 para nada): ', 0, len(self.player.inventory))) - 1
+
+            if opt == -1:
+                pass
+            else:
+                item = self.player.inventory[opt]
+                item_used = item.func(self.player)
+                if item_used:
+                    (self.player.inventory).pop(opt - 1)
 
         if action == '2': # move choice
             self.move_selection()
@@ -138,7 +151,7 @@ class engine:
         thing = (self.map[new_player_coor][player_coor_y]) if axis == 'x' else (self.map[player_coor_x][new_player_coor])
 
         # if in the way there is an object/item
-        if type(thing) == basic_item.basic_item:
+        if isinstance(thing, (basic_item.basic_item, basic_equip.basic_equip)):
             
             # if the object/item is taken and the inventory is in it's limit
             if (len(self.player.inventory) < self.player.inv_limit):

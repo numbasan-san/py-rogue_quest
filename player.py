@@ -2,6 +2,7 @@
 class player:
 
     def __init__(self, hp, damage, defense, sprite, x, y):
+        self.max_hp = hp
         self.hp = hp
         self.damage = damage
         self.defense = defense
