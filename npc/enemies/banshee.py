@@ -1,5 +1,5 @@
 
-from npc.enemy import enemy
+from npc.basic_enemy import basic_enemy as enemy
 
 class banshee:
 

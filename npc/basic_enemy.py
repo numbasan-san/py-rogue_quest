@@ -1,5 +1,5 @@
 
-class enemy:
+class basic_enemy:
 
     def __init__(self, name, hp, damage, defense, sprite, x, y, exp):
         self.name = name

@@ -1,9 +1,10 @@
 
 import os, input_handler, random
 import map_things.json_handler as json_handler
-import items.basic_item as basic_item
-import items.basic_equip as basic_equip
-import npc.enemy as enemy
+
+from items.basic_item import basic_item as basic_item
+from items.basic_equip import basic_equip as basic_equip
+from npc.basic_enemy import basic_enemy as enemy
 
 from getpass import getpass
 from utilities import *
@@ -26,13 +27,13 @@ class engine:
         self.player = start_characters.return_player((self.map_class['player_spawn_coors'])[0], (self.map_class['player_spawn_coors'])[1])
         
         # items print
-        items = start_items.return_items()
-        self.load_entity(self.map_class, items, 'items')
+        self.items = start_items.return_items()
+        self.load_entity(self.map_class, self.items, 'items')
         # items print end #
 
         # enemies print
-        enemy = start_characters.return_enemy()
-        self.load_entity(self.map_class, enemy, 'enemys')
+        self.enemy = start_characters.return_enemies()
+        self.load_entity(self.map_class, self.enemy, 'enemys')
         # enemies print end #
 
     def run(self):
@@ -45,9 +46,9 @@ class engine:
         for line in self.map:
             floor = ''
             for sq in line:
-                if isinstance(sq, (basic_item.basic_item, enemy.enemy, basic_equip.basic_equip)):
-                    sq = sq.sprite
-                floor += sq
+                if isinstance(sq, (basic_item, enemy, basic_equip)):
+                    sq = str(sq.sprite)
+                floor += str(sq)
             print(floor)
         # map print end #
 
@@ -83,9 +84,9 @@ class engine:
                 pass
             else:
                 item = self.player.inventory[opt]
-                item_used = item.func(self.player)
+                item_used = item.func(self.player) if ((item.to_player)) else item.func()
                 if item_used:
-                    (self.player.inventory).pop(opt - 1)
+                    (self.player.inventory).pop(opt)
 
         if action == '2': # move choice
             self.move_selection()
@@ -122,7 +123,7 @@ class engine:
     # execute the movement and everything that entails
     def load_move(self, axis, move_vector, x, y, move): 
         sq = self.map[x][y]
-        if type(sq) != enemy.enemy: # verifying if the next coor is an enemy
+        if not(isinstance(sq, (enemy))): # verifying if the next coor is an enemy
 
             # player's movement function
             utilities.print_effect('\n' + move_vector['msg'] + '\n')
@@ -151,7 +152,7 @@ class engine:
         thing = (self.map[new_player_coor][player_coor_y]) if axis == 'x' else (self.map[player_coor_x][new_player_coor])
 
         # if in the way there is an object/item
-        if isinstance(thing, (basic_item.basic_item, basic_equip.basic_equip)):
+        if isinstance(thing, (basic_item, basic_equip)):
             
             # if the object/item is taken and the inventory is in it's limit
             if (len(self.player.inventory) < self.player.inv_limit):

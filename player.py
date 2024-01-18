@@ -3,7 +3,7 @@ class player:
 
     def __init__(self, hp, damage, defense, sprite, x, y):
         self.max_hp = hp
-        self.hp = hp
+        self.hp = hp - 5
         self.damage = damage
         self.defense = defense
         self.sprite = sprite
@@ -11,4 +11,7 @@ class player:
         self.y = y
         self.inv_limit = 10
         self.inventory = []
-        self.equipment = []
+        self.equipment = {
+            'sword': None,
+            'shield': None
+        }

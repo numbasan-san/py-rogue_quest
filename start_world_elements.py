@@ -10,7 +10,7 @@ class start_characters:
         # hp, damage, defense, sprite, x, y
         return player(100, 25, 10, '@', x, y)
     
-    def return_enemy():
+    def return_enemies():
         return [
             kelpie.kelpie.start_kelpie(),
             banshee.banshee.start_banshee(),
@@ -21,7 +21,8 @@ class start_items:
 
     def return_items():
         return [
-            potion.potion(),
-            potion_power.potion_power.start_potion_power(),
-            sword.sword.start_sword(),
+            Potion.potion.start_potion(),
+            Potion_power.potion_power.start_potion_power(),
+            Sword.sword.start_sword(),
+            Shield.shield.start_shield(),
         ]
