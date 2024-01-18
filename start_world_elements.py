@@ -15,6 +15,7 @@ class start_characters:
             kelpie.kelpie.start_kelpie(),
             banshee.banshee.start_banshee(),
             ghoul.ghoul.start_ghoul(),
+            titan.titan.start_titan(),
         ]
 
 class start_items:
@@ -24,5 +25,6 @@ class start_items:
             Potion.potion.start_potion(),
             Potion_power.potion_power.start_potion_power(),
             Sword.sword.start_sword(),
+            Fire_Sword.fire_sword.start_fire_sword(),
             Shield.shield.start_shield(),
         ]

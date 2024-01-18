@@ -1,7 +1,7 @@
 
 class basic_enemy:
 
-    def __init__(self, name, hp, damage, defense, sprite, x, y, exp):
+    def __init__(self, name, hp, damage, defense, sprite, x, y, exp, alter_status = None):
         self.name = name
         self.hp = hp
         self.damage = damage
@@ -10,3 +10,4 @@ class basic_enemy:
         self.x = x
         self.y = y
         self.exp = exp
+        self.alter_status = alter_status

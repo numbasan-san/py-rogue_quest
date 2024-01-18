@@ -8,15 +8,4 @@
 #         files_names.append(i.replace('.py', ''))
 # print(files_names)
 
-__all__ =  ['Sword', 'Shield']
-
-# # import os
-
-# # list_files = (os.listdir())
-# # files_names = []
-# # for i in list_files:
-# #     if i[0] != '_':
-# #         files_names.append(i.replace('.py', ''))
-# # print(files_names)
-
-# __all__ =  ['potion', 'potion_power']
+__all__ =  ['Sword', 'Shield', 'Fire_Sword']

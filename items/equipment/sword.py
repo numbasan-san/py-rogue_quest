@@ -10,9 +10,13 @@ class sword:
 class use_sword:
 
     def use_function(player):
+        
+        # check if the player have an sword or not
         if player.equipment['sword'] == None or (player.equipment['sword']).name != (sword.start_sword()).name:
+
+            # sword in equipment and buff to damage
             player.equipment['sword'] = sword.start_sword()
             print('El jugador se equipó ' + (sword.start_sword()).name + '.')
-            player.damage += (player.equipment['sword']).damage
+            player.damage = (player.equipment['sword']).damage + player.base_damage
         else:
             print((sword.start_sword()).name + ' ya equipado.')
