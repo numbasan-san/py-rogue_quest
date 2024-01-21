@@ -200,11 +200,17 @@ class engine:
         damage = int(attacker.damage / (2 ** (victim.defense / attacker.damage))) # + weapon.critic
         victim.hp -= damage
 
+        attacker_name = attacker.name if type(attacker) != type(self.player) else 'player'
+        victim_name = victim.name if type(victim) != type(self.player) else 'player'
+
+        utilities.print_effect(f'\nEl/La {attacker_name} le metió un madrazo a {victim_name}. {str(damage)}\n')
+        utilities.print_effect(f'Salud de la victima del madrazo: {victim.hp}.\n')
+
         if isinstance(attacker, (player)): # if the player is the attacker
             player_sword = attacker.equipment['sword']
             if player_sword != None: # if the player have a weapon
                 # if the weapon have an effect and the victim have already an effect
-                if (player_sword).battle_effect != None and (victim.alter_status != None):
+                if (player_sword).battle_effect != None and (victim.alter_status == None):
                     (player_sword).battle_effect(victim)
             
         if victim.alter_status != None: # if the victim doesn't have an altered effect
@@ -213,12 +219,6 @@ class engine:
             if victim.alter_status[1] <= 0: # when the effect ends
                 victim.alter_status = None 
 
-        
-        attacker_name = attacker.name if type(attacker) != type(self.player) else 'player'
-        victim_name = victim.name if type(victim) != type(self.player) else 'player'
-
-        utilities.print_effect(f'\nEl/La {attacker_name} le metió un madrazo a {victim_name}. {str(damage)}\n')
-        utilities.print_effect(f'Salud de la victima del madrazo: {victim.hp}.\n\n')
 
     # to load entity
     def load_entity(self, map_coors, start_entities, load_entity):
