@@ -8,7 +8,7 @@ from npc.basic_enemy import basic_enemy as enemy
 
 from getpass import getpass
 from utilities import *
-from start_world_elements import *
+from start_world_elements import start_player, start_enemies, start_items, player
 
 class engine:
 
@@ -21,39 +21,38 @@ class engine:
             'in_use': False
         }
         self.end_exe = False
+        self.start_player = start_player() # to return the player
+        self.start_enemies = start_enemies() # to return the enemies
+        self.items = start_items() # to return the items
 
+        # map's constructions
         self.map_class = (json_handler.load_random_map())
         self.map = self.map_class['map']
-        self.player = start_characters.return_player((self.map_class['player_spawn_coors'])[0], (self.map_class['player_spawn_coors'])[1])
-        
-        # items print
-        self.items = start_items.return_items()
-        self.load_entity(self.map_class, self.items, 'items')
-        # items print end #
 
-        # enemies print
-        self.enemy = start_characters.return_enemies()
-        self.load_entity(self.map_class, self.enemy, 'enemys')
-        # enemies print end #
+        # player
+        self.player = self.start_player.return_player((self.map_class['player_spawn_coors'])[0], (self.map_class['player_spawn_coors'])[1])
+        self.load_entity(self.map_class, self.items.return_items(), 'items') # items print
+        self.load_entity(self.map_class, self.start_enemies.return_enemies(), 'enemys') # enemies print
 
     def run(self):
+        # time.sleep(5)
         os.system('cls')
 
         # player print
-        self.map[self.player.x][self.player.y] = self.player.sprite
+        self.map[self.player.x][self.player.y] = self.player
 
         # map print
         for line in self.map:
             floor = ''
             for sq in line:
-                if isinstance(sq, (basic_item, enemy, basic_equip)):
+                if isinstance(sq, (basic_item, enemy, basic_equip, player)):
                     sq = str(sq.sprite)
                 floor += str(sq)
             print(floor)
         # map print end #
 
         # print player stats
-        print(f'HP: {self.player.hp}/{self.player.max_hp}. Atk: {self.player.damage} Def: {self.player.defense}.')
+        print(f'HP: {self.player.hp}/{self.player.max_hp}. Atk: {self.player.damage} Def: {self.player.defense}. Exp: {self.player.exp}')
         # print player stats end #
 
         # inventory's print
@@ -126,12 +125,18 @@ class engine:
         if not(isinstance(sq, (enemy))): # verifying if the next coor is an enemy
 
             # player's movement function
-            utilities.print_effect('\n' + move_vector['msg'] + '\n')
+            utilities.print_effect(f'\n{move_vector["msg"]}\n')
             self.movement(axis, move, move_vector['move'])
 
-        else:
-            self.combat_logic(self.player, sq)
-            self.combat_logic(sq, self.player)
+        else: # if the next coor is an enemy
+            if sq.state:
+                self.combat_logic(self.player, sq)
+                if sq.state:
+                    self.combat_logic(sq, self.player)
+            else:
+                utilities.print_effect(f'\nEs el cuerpo inerte de un/una {sq.name}.')
+                utilities.print_effect(f'\n{move_vector["msg"]}\n')
+                self.movement(axis, move, move_vector['move'])
 
     # to save a item in the room
     def room_inv_save(self, item, x, y, in_use):
@@ -152,10 +157,10 @@ class engine:
         thing = (self.map[new_player_coor][player_coor_y]) if axis == 'x' else (self.map[player_coor_x][new_player_coor])
 
         # if in the way there is an object/item
-        if isinstance(thing, (basic_item, basic_equip)):
+        if isinstance(thing, (basic_item, basic_equip, enemy)):
             
             # if the object/item is taken and the inventory is in it's limit
-            if (len(self.player.inventory) < self.player.inv_limit):
+            if (len(self.player.inventory) < self.player.inv_limit) and not(isinstance(thing, (enemy))):
                 
                 self.player.inventory.append(thing)
                 utilities.print_effect(f'{thing.name} fue tomado.\n')
@@ -170,7 +175,6 @@ class engine:
                     self.room_inv_save(thing, new_player_coor, player_coor_y, True)
                 else:
                     self.room_inv_save(thing, player_coor_x, new_player_coor, True)
-
         # player's axis move
         if axis == 'x': # in horizontal axis
             self.player.x = new_player_coor
@@ -198,13 +202,13 @@ class engine:
     def combat_logic(self, attacker, victim):
 
         damage = int(attacker.damage / (2 ** (victim.defense / attacker.damage))) # + weapon.critic
+        damage = damage if damage > 1 else 1
         victim.hp -= damage
 
         attacker_name = attacker.name if type(attacker) != type(self.player) else 'player'
         victim_name = victim.name if type(victim) != type(self.player) else 'player'
 
-        utilities.print_effect(f'\nEl/La {attacker_name} le metió un madrazo a {victim_name}. {str(damage)}\n')
-        utilities.print_effect(f'Salud de la victima del madrazo: {victim.hp}.\n')
+        utilities.print_effect(f'\nEl/La {attacker_name} atacó a {victim_name}. {str(damage)} ')
 
         if isinstance(attacker, (player)): # if the player is the attacker
             player_sword = attacker.equipment['sword']
@@ -217,14 +221,26 @@ class engine:
             (victim.alter_status[0])(victim) # the effect
             victim.alter_status[1] -= 1 # reduction in duration of effect
             if victim.alter_status[1] <= 0: # when the effect ends
-                victim.alter_status = None 
+                victim.alter_status = None
+        
+        if victim.hp <= 0 and victim.state: # death verification
+            (self.map[victim.x][victim.y]).state = not(victim.state)
+            (self.map[victim.x][victim.y]).sprite = '%'
+            utilities.print_effect(f'{victim_name} murió.\n')
+            if isinstance(victim, (player)):
+                utilities.print_effect(f'\n M O R T I S \n')
+                self.end_exe = not(self.end_exe)
+            else:
+                attacker.exp += victim.exp
+
 
 
     # to load entity
     def load_entity(self, map_coors, start_entities, load_entity):
         for i in range(len(map_coors[load_entity + '_spawn_coors'])):
-            entity = random.choice(start_entities) # A random entity selected
-
+            random_entity = random.choice(start_entities) # A random entity selected
+            entity = random_entity.start() # starting the entity
+            
             # setting coors for each "entity spawn coors" in the map in turn
             entity.x = (((map_coors[load_entity + '_spawn_coors'])[i]))[0]
             entity.y = (((map_coors[load_entity + '_spawn_coors'])[i]))[1]

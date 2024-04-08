@@ -1,30 +1,56 @@
 
 from player import *
-from items.consumables import *
-from items.equipment import *
-from npc.enemies import *
 
-class start_characters:
+from items.consumables.Potion import *
+from items.consumables.Potion_Power import *
+from items.equipment.Sword import *
+from items.equipment.Shield import *
+from items.equipment.Fire_Sword import *
 
-    def return_player(x, y):
+from npc.enemies.kelpie import *
+from npc.enemies.banshee import *
+from npc.enemies.ghoul import *
+from npc.enemies.titan import * 
+
+class start_player:
+
+    def __init__(self):
+        self.player = player
+
+    def return_player(self, x, y):
         # hp, damage, defense, sprite, x, y
-        return player(100, 25, 10, '@', x, y)
+        return self.player(10, 100, 0, '@', x, y)
     
-    def return_enemies():
+class start_enemies:
+
+    def __init__(self):
+        self.kelpie = kelpie()
+        self.banshee = banshee()
+        self.ghoul = ghoul()
+        self.titan = titan()
+
+    def return_enemies(self):
         return [
-            kelpie.kelpie.start_kelpie(),
-            banshee.banshee.start_banshee(),
-            ghoul.ghoul.start_ghoul(),
-            titan.titan.start_titan(),
+            self.kelpie,
+            self.banshee,
+            self.ghoul,
+            self.titan,
         ]
 
 class start_items:
 
-    def return_items():
+    def __init__(self):
+        self.potion = potion()
+        self.potion_power = potion_power()
+        self.sword = sword()
+        self.fire_sword = fire_sword()
+        self.shield = shield()
+
+    def return_items(self):
         return [
-            Potion.potion.start_potion(),
-            Potion_power.potion_power.start_potion_power(),
-            Sword.sword.start_sword(),
-            Fire_Sword.fire_sword.start_fire_sword(),
-            Shield.shield.start_shield(),
+            self.potion,
+            self.potion_power,
+            self.sword,
+            self.fire_sword,
+            self.shield
         ]

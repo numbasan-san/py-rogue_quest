@@ -3,7 +3,7 @@ class player:
 
     def __init__(self, hp, damage, defense, sprite, x, y, alter_status = None):
         self.max_hp = hp
-        self.hp = hp - 5
+        self.hp = hp
         
         self.base_damage = damage
         self.damage = damage
@@ -22,3 +22,7 @@ class player:
             'sword': None,
             'shield': None
         }
+
+        self.exp = 0
+        
+        self.state = True

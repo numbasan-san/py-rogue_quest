@@ -10,4 +10,5 @@ class basic_enemy:
         self.x = x
         self.y = y
         self.exp = exp
+        self.state = True
         self.alter_status = alter_status
