@@ -17,7 +17,7 @@ class fire_sword:
     
     def burn(self, victim): # sword's efect
         victim.hp -= 1
-        utilities.print_effect(f'\n{victim.name} sufre por quemaduras. Vida reducida por 1 punto.')
+        utilities.print_effect(f'\n\n{victim.name} sufre por quemaduras. Vida reducida por 1 punto.')
 
     def use_function(self, player):
         

@@ -8,4 +8,4 @@
 #         files_names.append(i.replace('.py', ''))
 # print(files_names)
 
-__all__ =  ['Sword', 'Shield', 'Fire_Sword']
+__all__ =  ['Sword', 'Shield', 'Fire_Sword', 'Shield_Medusa']

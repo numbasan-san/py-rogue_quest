@@ -34,4 +34,5 @@ class start_items:
             Sword.sword(),
             Fire_Sword.fire_sword(),
             Shield.shield(),
+            Shield_Medusa.shield_medusa(),
         ]
