@@ -1,8 +1,8 @@
 
 import json, random
-import map_things.maps_handler as maps_handler
+import data.map_things.maps_handler as maps_handler
 
-FILE_PATH = 'map_things/maps_data.json'
+FILE_PATH = 'data/map_things/maps_data.json'
 
 '''
 La idea es tener en una esquina todos los mapas en formato .txt.

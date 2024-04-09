@@ -20,10 +20,10 @@ def valid_move(x, y, map, player_around):
         move_opt.remove('d')
 
     key = utilities.opciones('Elija por donde ir', move_opt)
-    
+
     # move vectors
     if key == 'w':
-        return { 'move': -1, 'direc': 'w', 'msg': 'El jugador se desplazó hacia arriba.' }
+        return {'move': -1, 'direc': 'w', 'msg': 'El jugador se desplazó hacia arriba.'}
     if key == 'a':
         return {'move': -1, 'direc': 'a', 'msg': 'El jugador se desplazó hacia la izquierda.'}
     if key == 's':

@@ -1,5 +1,6 @@
 
 import random
+from utilities import *
 from items.basic_equip import basic_equip
 
 class fire_sword:
@@ -16,21 +17,19 @@ class fire_sword:
     
     def burn(self, victim): # sword's efect
         victim.hp -= 1
-        print(victim.name + ' sufre por quemaduras. Vida reducida por 1 punto.')
-
-# class use_fire_sword:
+        utilities.print_effect(f'\n{victim.name} sufre por quemaduras. Vida reducida por 1 punto.')
 
     def use_function(self, player):
         
         # check if the player have an sword or not
-        if player.equipment['sword'] == None or (player.equipment['sword']).name != (self.start_fire_sword()).name:
+        if player.equipment['sword'] == None or (player.equipment['sword']).name != (self.start()).name:
 
             # sword in equipment and buff to damage
-            player.equipment['sword'] = self.start_fire_sword()
-            print('El jugador se equipó ' + (self.start_fire_sword()).name + '.')
-            player.damage = (player.equipment['sword']).damage + player.base_damage
+            player.equipment['sword'] = self.start()
+            utilities.print_effect('\nEl jugador se equipó ' + (self.start()).name + '.')
+            player.damage = (player.equipment['sword']).damage + player.damage
         else:
-            print((self.start_fire_sword()).name + ' ya equipado.')
+            utilities.print_effect(f'\n{(self.start()).name} ya equipado.')
 
     def use_alter_status(self, victim): # is the altered state effect of the weapon
         var = random.randint(0, 10)

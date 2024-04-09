@@ -1,5 +1,6 @@
 
 from items.basic_equip import basic_equip
+from utilities import *
 
 class shield:
 
@@ -13,15 +14,13 @@ class shield:
         to_player = True
         return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player)
 
-# class use_shield:
-
     def use_function(self, player):
         # check if the player have an shield or not.
-        if player.equipment['shield'] == None or (player.equipment['shield']).name != (self.start_shield()).name:
+        if player.equipment['shield'] == None or (player.equipment['shield']).name != (self.start()).name:
             
             # shield in equipment and buff to defense
-            player.equipment['shield'] = self.start_shield()
-            print('El jugador se equipó ' + (self.start_shield()).name + '.')
+            player.equipment['shield'] = self.start()
+            utilities.print_effect('El jugador se equipó ' + (self.start()).name + '.')
             player.defense = (player.equipment['shield']).defense + player.base_defense
         else:
-            print((self.start_shield()).name + ' ya equipado.')
+            utilities.print_effect((self.start()).name + ' ya equipado.')

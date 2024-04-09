@@ -24,5 +24,6 @@ class player:
         }
 
         self.exp = 0
+        self.level = 1
         
         self.state = True

@@ -1,6 +1,7 @@
 
 import os, input_handler, random
-import map_things.json_handler as json_handler
+import data.map_things.json_handler as json_handler
+from data.level_things import levels
 
 from items.basic_item import basic_item as basic_item
 from items.basic_equip import basic_equip as basic_equip
@@ -13,7 +14,6 @@ from start_world_elements import start_player, start_enemies, start_items, playe
 class engine:
 
     def __init__(self):
-
         self.room_inv = {
             'item': None,
             'coor_x': 0,
@@ -52,7 +52,7 @@ class engine:
         # map print end #
 
         # print player stats
-        print(f'HP: {self.player.hp}/{self.player.max_hp}. Atk: {self.player.damage} Def: {self.player.defense}. Exp: {self.player.exp}')
+        print(f'HP: {self.player.hp}/{self.player.max_hp}. Atk: {self.player.damage}/{self.player.base_damage}. Def: {self.player.defense}/{self.player.base_defense}. Lvl(Exp): {self.player.level}({self.player.exp}).')
         # print player stats end #
 
         # inventory's print
@@ -62,11 +62,15 @@ class engine:
             inventory += slot
         # inventory's print end #
 
-        print(f'Inventario del jugador: [{inventory}]')
+        print(f'Inventario: [{inventory}]')
+
+        sword = 'NO' if self.player.equipment["sword"] == None else (self.player.equipment["sword"]).name
+        shield = 'NO' if self.player.equipment["shield"] == None else (self.player.equipment["shield"]).name
+        print(f'Arma: [{sword}]. Escudo: [{shield}].')
 
         # actions menu
         text = "1. Mirar inventario.\n2. Moverse."
-        action = utilities.opciones('Elija una de las opciones:\n' + text + '\nElección', ['1', '2'])
+        action = utilities.opciones('\nElija una de las opciones:\n' + text + '\nElección', ['1', '2'])
 
         if action == '1': # look into inventory choice
             print('\n-----Inventario-----')
@@ -75,7 +79,7 @@ class engine:
                     print(f'{i + 1}. {(self.player.inventory[i]).name}.')
             else:
                 print('VACÍO')
-            print()
+            print('-------------------\n')
 
             opt = (utilities.pregunta('Elija qué usar (0 para nada): ', 0, len(self.player.inventory))) - 1
 
@@ -133,6 +137,19 @@ class engine:
                 self.combat_logic(self.player, sq)
                 if sq.state:
                     self.combat_logic(sq, self.player)
+
+                # when the player get exp
+                lvl = int(levels.find_level(self.player.exp))
+                if lvl > self.player.level:
+                    utilities.print_effect(f'\nEl jugador subió de nivel {self.player.level} a {lvl}.\n')
+                    for i in range(self.player.level, lvl):
+                        self.player.level = lvl
+                        self.player.max_hp += 5
+                        self.player.base_damage += 5
+                        self.player.base_defense += 5
+                        self.player.hp += 3
+                        self.player.defense += 3
+                        self.player.damage += 3
             else:
                 utilities.print_effect(f'\nEs el cuerpo inerte de un/una {sq.name}.')
                 utilities.print_effect(f'\n{move_vector["msg"]}\n')
@@ -158,10 +175,10 @@ class engine:
 
         # if in the way there is an object/item
         if isinstance(thing, (basic_item, basic_equip, enemy)):
-            
+
             # if the object/item is taken and the inventory is in it's limit
             if (len(self.player.inventory) < self.player.inv_limit) and not(isinstance(thing, (enemy))):
-                
+
                 self.player.inventory.append(thing)
                 utilities.print_effect(f'{thing.name} fue tomado.\n')
 
@@ -216,17 +233,17 @@ class engine:
                 # if the weapon have an effect and the victim have already an effect
                 if (player_sword).battle_effect != None and (victim.alter_status == None):
                     (player_sword).battle_effect(victim)
-            
+
         if victim.alter_status != None: # if the victim doesn't have an altered effect
             (victim.alter_status[0])(victim) # the effect
             victim.alter_status[1] -= 1 # reduction in duration of effect
             if victim.alter_status[1] <= 0: # when the effect ends
                 victim.alter_status = None
-        
+
         if victim.hp <= 0 and victim.state: # death verification
             (self.map[victim.x][victim.y]).state = not(victim.state)
             (self.map[victim.x][victim.y]).sprite = '%'
-            utilities.print_effect(f'{victim_name} murió.\n')
+            utilities.print_effect(f'\n{victim_name} murió.\n')
             if isinstance(victim, (player)):
                 utilities.print_effect(f'\n M O R T I S \n')
                 self.end_exe = not(self.end_exe)
@@ -240,7 +257,7 @@ class engine:
         for i in range(len(map_coors[load_entity + '_spawn_coors'])):
             random_entity = random.choice(start_entities) # A random entity selected
             entity = random_entity.start() # starting the entity
-            
+
             # setting coors for each "entity spawn coors" in the map in turn
             entity.x = (((map_coors[load_entity + '_spawn_coors'])[i]))[0]
             entity.y = (((map_coors[load_entity + '_spawn_coors'])[i]))[1]

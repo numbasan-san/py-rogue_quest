@@ -1,5 +1,6 @@
 
 from items.basic_item import basic_item
+from utilities import *
 
 class potion_power:
 
@@ -10,9 +11,7 @@ class potion_power:
         to_player = True
         return basic_item(name, sprite, x, y, self.use_function, to_player = to_player)
 
-# class use_potion_power:
-
-    def use_function(player):
+    def use_function(self, player):
         player.damage += 10
-        print('Ataque del jugador aumentado.')
+        utilities.print_effect('\nAtaque del jugador aumentado.\n')
         return True
