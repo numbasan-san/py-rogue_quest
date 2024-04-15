@@ -13,7 +13,7 @@ class fire_sword:
         critic = 10
         defense = 0
         to_player = True
-        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status)
+        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = "Puede causar quemaduras a quien se le ataque")
     
     def burn(self, victim): # sword's efect
         victim.hp -= 1
@@ -30,7 +30,12 @@ class fire_sword:
             player.damage = (player.equipment['sword']).damage + player.damage
         else:
             utilities.print_effect(f'\n{(self.start()).name} ya equipado.')
-
+    
+    def nonuse_function(self, player):
+        player.equipment['sword'] = None
+        utilities.print_effect('\nEl jugador se desequipó ' + (self.start()).name + '.')
+        player.damage = player.damage - (player.equipment['sword']).damage
+        
     def use_alter_status(self, victim): # is the altered state effect of the weapon
         var = random.randint(0, 10)
         if var > 8:

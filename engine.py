@@ -40,8 +40,8 @@ class engine:
         hud.print_hud(self.map, self.player)
 
         # actions menu
-        text = "1. Mirar inventario.\n2. Moverse."
-        action = utilities.opciones('\nElija una de las opciones:\n' + text + '\nElección', ['1', '2'])
+        text = "1. Mirar inventario.\n2. Moverse.\n3. Mirar Equipamento"
+        action = utilities.opciones('\nElija una de las opciones:\n' + text + '\nElección', ['1', '2', '3'])
 
         if action == '1': # look into inventory choice
 
@@ -60,6 +60,7 @@ class engine:
                     if item_used:
                         (self.player.inventory).pop(opt)
                 if inv_action == '2': # drop it
+                    utilities.print_effect(f'{(self.player.inventory[opt]).name} se soltó.')
                     self.room_inv_save(item, self.player.x, self.player.y, True)
                     (self.player.inventory).pop(opt)
                 if inv_action == '0':
@@ -67,6 +68,28 @@ class engine:
 
         if action == '2': # move choice
             self.move_selection()
+
+        if action == '3': # look into equipment choice
+            hud.print_full_equip(self.player)
+            if self.player.equipment["sword"] != None or self.player.equipment["shield"] != None:
+                equip_opt = utilities.opciones(f'Elije (0 salir): ', ['0', '1', '2'])
+                equip = self.player.equipment["sword"] if equip_opt == '1' else self.player.equipment["shield"]
+                text = "0. Nada.\n1. Desequipar.\n2. Inspeccionar."
+                equip_action = utilities.opciones(f'\nElija qué hacer con {equip.name}:\n{text}\nElección', ['0', '1', '2'])
+
+                # equipment actions menu
+                if equip_action == '1': # drop it
+                    utilities.print_effect(f'{(self.player.inventory[equip_opt]).name} se desequipó.')
+                    self.room_inv_save(equip, self.player.x, self.player.y, True)
+                    (self.player.inventory).add()
+                if equip_action == '2': # inspect
+                    hud.print_equip_stats(equip)
+                if equip_action == '0': # nothing
+                    pass
+                # equipment actions menu end #
+
+            else:
+                utilities.print_effect('No hay nada equipado.')
         # actions menu end #
 
         getpass('')
@@ -118,7 +141,7 @@ class engine:
                     utilities.print_effect(f'\nEl jugador subió de nivel {self.player.level} a {lvl}.\n')
 
                     # when the player goes up more than one level at a time
-                    for i in range(self.player.level, lvl):
+                    for i in range(self.player.level, lvl + 1):
                         self.player.level = lvl
                         self.player.max_hp += 5
                         self.player.base_damage += 5
@@ -157,7 +180,7 @@ class engine:
             if (len(self.player.inventory) < self.player.inv_limit) and not(isinstance(thing, (enemy))):
 
                 self.player.inventory.append(thing)
-                utilities.print_effect(f'{thing.name} fue tomado.\n')
+                utilities.print_effect(f'{thing.name} guardado en el inventario.\n')
 
                 if axis == 'x':
                     self.map[new_player_coor][player_coor_y] = '.'

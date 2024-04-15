@@ -50,3 +50,23 @@ def print_full_invent(__player):
     else:
         print('VACÍO')
     print('-------------------\n')
+
+def print_full_equip(__player):
+    
+    sword = 'NO' if __player.equipment["sword"] == None else (__player.equipment["sword"]).name
+    shield = 'NO' if __player.equipment["shield"] == None else (__player.equipment["shield"]).name
+
+    print('\n-----EQUIPAMENTO-----')
+    print(f'1. {sword}')
+    print(f'2. {shield}')
+    print('-------------------\n')
+
+def print_equip_stats(equip):
+    text = f'-----ESTADÍSTICAS: {(equip.name).upper()}-----'
+    print(f'\n{text}')
+    attributes = vars(equip)
+    skipped_attributes = ['battle_effect', 'x', 'y', 'func', 'to_player', 'sprite']
+    for attr, value in attributes.items():
+        if attr not in skipped_attributes:
+            print(f'- {attr.capitalize()}: {value}.')
+    print(('-' * len(text)) + '\n')

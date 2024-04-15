@@ -13,5 +13,6 @@ class potion_power:
 
     def use_function(self, player):
         player.damage += 10
+        player.base_damage += 10
         utilities.print_effect('\nAtaque del jugador aumentado.\n')
         return True

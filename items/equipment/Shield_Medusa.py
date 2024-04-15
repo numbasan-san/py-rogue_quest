@@ -13,7 +13,7 @@ class shield_medusa:
         critic = 0
         defense = 20
         to_player = True
-        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status)
+        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = "Puede convertir en piedra a quien ataque al portador")
 
     def petrification(self, victim):
         victim.hp = 0
@@ -26,11 +26,16 @@ class shield_medusa:
             
             # shield in equipment and buff to defense
             player.equipment['shield'] = self.start()
-            utilities.print_effect('El jugador se equipó ' + (self.start()).name + '.')
+            utilities.print_effect('\nEl jugador se equipó ' + (self.start()).name + '.')
             player.defense = (player.equipment['shield']).defense + player.base_defense
         else:
             utilities.print_effect((self.start()).name + ' ya equipado.')
-            
+    
+    def nonuse_function(self, player):
+        player.equipment['shield'] = None
+        utilities.print_effect('\nEl jugador se desequipó ' + (self.start()).name + '.')
+        player.damage = player.damage - (player.equipment['shield']).damage
+    
     def use_alter_status(self, victim): # is the altered state effect of the weapon
         var = random.randint(0, 10)
         if var > 9:
