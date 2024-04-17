@@ -12,7 +12,7 @@ class shield:
         critic = 0
         defense = 10
         to_player = True
-        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, desc = 'Es un escudo normal')
+        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, desc = 'Es un escudo normal', nonfunc = self.nonuse_function)
 
     def use_function(self, player):
         # check if the player have an shield or not.
@@ -20,12 +20,12 @@ class shield:
             
             # shield in equipment and buff to defense
             player.equipment['shield'] = self.start()
-            utilities.print_effect('\nEl jugador se equipó ' + (self.start()).name + '.')
+            utilities.print_effect(f'\n[{(self.start()).name}] equipado.')
             player.defense = (player.equipment['shield']).defense + player.base_defense
         else:
-            utilities.print_effect((self.start()).name + ' ya equipado.')
+            utilities.print_effect(f'[{(self.start()).name}] ya equipado.')
 
-    def nonuse_function(self, player):
+    def nonuse_function(self, player, msg):
+        utilities.print_effect(msg)
+        player.defense = player.defense - (player.equipment['shield']).defense
         player.equipment['shield'] = None
-        utilities.print_effect('\nEl jugador se desequipó ' + (self.start()).name + '.')
-        player.damage = player.damage - (player.equipment['shield']).damage

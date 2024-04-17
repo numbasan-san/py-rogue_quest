@@ -54,13 +54,15 @@ class engine:
             else: # choose what to do with the selected object
                 item = self.player.inventory[opt]
                 text = "0. Nada.\n1. Usar.\n2. Soltar."
-                inv_action = utilities.opciones(f'\nElija qué hacer con {item.name}:\n' + text + '\nElección', ['0', '1', '2'])
+                inv_action = utilities.opciones(f'\nElija qué hacer con [{item.name}]:\n' + text + '\nElección', ['0', '1', '2'])
                 if inv_action == '1': # use it
                     item_used = item.func(self.player) if ((item.to_player)) else item.func()
                     if item_used:
                         (self.player.inventory).pop(opt)
+                    elif isinstance(item, (basic_equip)):
+                        (self.player.inventory).pop(opt)
                 if inv_action == '2': # drop it
-                    utilities.print_effect(f'{(self.player.inventory[opt]).name} se soltó.')
+                    utilities.print_effect(f'[{(self.player.inventory[opt]).name}] se soltó.')
                     self.room_inv_save(item, self.player.x, self.player.y, True)
                     (self.player.inventory).pop(opt)
                 if inv_action == '0':
@@ -74,22 +76,27 @@ class engine:
             if self.player.equipment["sword"] != None or self.player.equipment["shield"] != None:
                 equip_opt = utilities.opciones(f'Elije (0 salir): ', ['0', '1', '2'])
                 equip = self.player.equipment["sword"] if equip_opt == '1' else self.player.equipment["shield"]
-                text = "0. Nada.\n1. Desequipar.\n2. Inspeccionar."
-                equip_action = utilities.opciones(f'\nElija qué hacer con {equip.name}:\n{text}\nElección', ['0', '1', '2'])
+                if equip != None:
+                    text = "0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar."
+                    equip_action = utilities.opciones(f'\nElija qué hacer con [{equip.name}]:\n{text}\nElección', ['0', '1', '2', '3'])
 
-                # equipment actions menu
-                if equip_action == '1': # drop it
-                    utilities.print_effect(f'{(self.player.inventory[equip_opt]).name} se desequipó.')
-                    self.room_inv_save(equip, self.player.x, self.player.y, True)
-                    (self.player.inventory).add()
-                if equip_action == '2': # inspect
-                    hud.print_equip_stats(equip)
-                if equip_action == '0': # nothing
-                    pass
-                # equipment actions menu end #
+                    # equipment actions menu
+                    if equip_action == '1': # unequip
+                        equip.nonfunc(self.player, f'\n{(equip).name} se desequipó.')
+                        (self.player.inventory).append(equip)
+                    if equip_action == '2': # inspect
+                        hud.print_equip_stats(equip)
+                    if equip_action == '3': # drop it
+                        self.room_inv_save(equip, self.player.x, self.player.y, True)
+                        equip.nonfunc(self.player, f'\n{(equip).name} se soltó.')
+                    if equip_action == '0': # nothing
+                        pass
+                    # equipment actions menu end #
+
+                else: utilities.print_effect('\nNada equipado.')
 
             else:
-                utilities.print_effect('No hay nada equipado.')
+                utilities.print_effect('\nNada equipado.')
         # actions menu end #
 
         getpass('')
@@ -136,9 +143,9 @@ class engine:
                     self.combat_logic(sq, self.player)
 
                 # when the player get exp
-                lvl = int(levels.find_level(self.player.exp))
+                lvl = int(levels.find_level(self.player.level, self.player.exp))
                 if lvl > self.player.level:
-                    utilities.print_effect(f'\nEl jugador subió de nivel {self.player.level} a {lvl}.\n')
+                    utilities.print_effect(f'\nEl jugador subió de nivel [{self.player.level}] a [{lvl}].\n')
 
                     # when the player goes up more than one level at a time
                     for i in range(self.player.level, lvl + 1):
@@ -147,11 +154,11 @@ class engine:
                         self.player.base_damage += 5
                         self.player.base_defense += 5
                         self.player.hp += 3
-                        self.player.defense += 3
-                        self.player.damage += 3
+                        self.player.defense += 5
+                        self.player.damage += 5
 
             else: # if the enemy is dead
-                utilities.print_effect(f'\nEs el cuerpo inerte de un/una {sq.name}.')
+                utilities.print_effect(f'\nEs el cuerpo inerte de un/una [{sq.name}].')
                 utilities.print_effect(f'\n{move_vector["msg"]}\n')
                 self.movement(axis, move, move_vector['move'])
 
@@ -180,7 +187,7 @@ class engine:
             if (len(self.player.inventory) < self.player.inv_limit) and not(isinstance(thing, (enemy))):
 
                 self.player.inventory.append(thing)
-                utilities.print_effect(f'{thing.name} guardado en el inventario.\n')
+                utilities.print_effect(f'[{thing.name}] guardado en el inventario.\n')
 
                 if axis == 'x':
                     self.map[new_player_coor][player_coor_y] = '.'
@@ -225,7 +232,7 @@ class engine:
         attacker_name = attacker.name if type(attacker) != type(self.player) else 'player'
         victim_name = victim.name if type(victim) != type(self.player) else 'player'
 
-        utilities.print_effect(f'\nEl/La {attacker_name} atacó a {victim_name}. {str(damage)}')
+        utilities.print_effect(f'\nEl/La [{attacker_name}] atacó a [{victim_name}]. {str(damage)}')
 
         if isinstance(attacker, (player)): # if the player is the attacker
             player_sword = attacker.equipment['sword']
@@ -249,7 +256,7 @@ class engine:
         if victim.hp <= 0 and victim.state: # death verification
             (self.map[victim.x][victim.y]).state = not(victim.state)
             (self.map[victim.x][victim.y]).sprite = '%'
-            utilities.print_effect(f'\n{victim_name} murió.\n')
+            utilities.print_effect(f'\n[{victim_name}] murió.\n')
             if isinstance(victim, (player)): # when the player dies
                 utilities.print_effect(f'\n M O R T I S \n')
                 self.end_exe = not(self.end_exe)

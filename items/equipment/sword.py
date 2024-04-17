@@ -12,7 +12,7 @@ class sword:
         critic = 5
         defense = 0
         to_player = True
-        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, desc = 'Es una espada normal')
+        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, desc = 'Es una espada normal', nonfunc = self.nonuse_function)
 
     def use_function(self, player):
         
@@ -21,12 +21,12 @@ class sword:
 
             # sword in equipment and buff to damage
             player.equipment['sword'] = self.start()
-            utilities.print_effect('\nEl jugador se equipó ' + (self.start()).name + '.')
+            utilities.print_effect(f'\n[{(self.start()).name}] equipado.')
             player.damage = (player.equipment['sword']).damage + player.damage
         else:
-            utilities.print_effect((self.start()).name + ' ya equipado.')
+            utilities.print_effect(f'[{(self.start()).name}] ya equipado.')
 
-    def nonuse_function(self, player):
-        player.equipment['sword'] = None
-        utilities.print_effect('\nEl jugador se desequipó ' + (self.start()).name + '.')
+    def nonuse_function(self, player, msg):
+        utilities.print_effect(msg)
         player.damage = player.damage - (player.equipment['sword']).damage
+        player.equipment['sword'] = None

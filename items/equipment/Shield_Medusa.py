@@ -13,11 +13,11 @@ class shield_medusa:
         critic = 0
         defense = 20
         to_player = True
-        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = "Puede convertir en piedra a quien ataque al portador")
+        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = "Puede convertir en piedra a quien ataque al portador", nonfunc = self.nonuse_function)
 
     def petrification(self, victim):
         victim.hp = 0
-        utilities.print_effect(f'\n\n{victim.name} activó la maldición de Medusa en su ataque y se convirtió en piedra.')
+        utilities.print_effect(f'\n\n[{victim.name}] activó la maldición de Medusa en su ataque y se convirtió en piedra.')
 
 
     def use_function(self, player):
@@ -26,15 +26,15 @@ class shield_medusa:
             
             # shield in equipment and buff to defense
             player.equipment['shield'] = self.start()
-            utilities.print_effect('\nEl jugador se equipó ' + (self.start()).name + '.')
+            utilities.print_effect(f'\n[{(self.start()).name}] equipado.')
             player.defense = (player.equipment['shield']).defense + player.base_defense
         else:
-            utilities.print_effect((self.start()).name + ' ya equipado.')
+            utilities.print_effect(f'[{(self.start()).name}] ya equipado.')
     
-    def nonuse_function(self, player):
+    def nonuse_function(self, player, msg):
+        utilities.print_effect(msg)
+        player.defense = player.defense - (player.equipment['shield']).defense
         player.equipment['shield'] = None
-        utilities.print_effect('\nEl jugador se desequipó ' + (self.start()).name + '.')
-        player.damage = player.damage - (player.equipment['shield']).damage
     
     def use_alter_status(self, victim): # is the altered state effect of the weapon
         var = random.randint(0, 10)
