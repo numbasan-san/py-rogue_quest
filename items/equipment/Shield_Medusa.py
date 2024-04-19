@@ -19,7 +19,6 @@ class shield_medusa:
         victim.hp = 0
         utilities.print_effect(f'\n\n[{victim.name}] activó la maldición de Medusa en su ataque y se convirtió en piedra.')
 
-
     def use_function(self, player):
         # check if the player have an shield or not.
         if player.equipment['shield'] == None or (player.equipment['shield']).name != (self.start()).name:

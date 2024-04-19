@@ -3,6 +3,7 @@ import os
 
 from items.basic_item import basic_item as basic_item
 from items.basic_equip import basic_equip as basic_equip
+from items.basic_environment_item import basic_environment_item as basic_environment_item
 from npc.basic_enemy import basic_enemy as enemy
 from start_world_elements import player
 
@@ -18,7 +19,7 @@ def print_hud(__map, __player):
     for line in __map:
         floor = ''
         for sq in line:
-            if isinstance(sq, (basic_item, enemy, basic_equip, player)):
+            if isinstance(sq, (basic_item, enemy, basic_equip, player, basic_environment_item)):
                 sq = str(sq.sprite)
             floor += str(sq)
         print(floor)
@@ -65,7 +66,7 @@ def print_equip_stats(equip):
     text = f'-----ESTADÍSTICAS: {(equip.name).upper()}-----'
     print(f'\n{text}')
     attributes = vars(equip)
-    skipped_attributes = ['battle_effect', 'x', 'y', 'func', 'to_player', 'sprite']
+    skipped_attributes = ['battle_effect', 'x', 'y', 'func', 'to_player', 'sprite', 'nonfunc']
     for attr, value in attributes.items():
         if attr not in skipped_attributes:
             print(f'- {attr.capitalize()}: {value}.')

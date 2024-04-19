@@ -3,26 +3,29 @@ from player import *
 
 from items.consumables import *
 from items.equipment import *
+from items.environment import *
 
 from npc.enemies import *
 
 class start_player:
 
     def __init__(self):
-        self.player = player
-
-    def return_player(self, x, y):
         # hp, damage, defense, sprite, x, y
-        return self.player(100, 100, 0, '@', x, y)
+        self.player = player(100, 100, 0, '@')
+
+    def mod_player_coords(self, x, y):
+        self.player.x = x
+        self.player.y = y
+        return self.player
     
 class start_enemies:
 
     def return_enemies(self):
         return [
-            kelpie.kelpie(),
-            banshee.banshee(),
-            ghoul.ghoul(),
-            titan.titan(),
+            Kelpie.kelpie(),
+            Banshee.banshee(),
+            Ghoul.ghoul(),
+            Titan.titan(),
         ]
 
 class start_items:
@@ -35,4 +38,9 @@ class start_items:
             Fire_Sword.fire_sword(),
             Shield.shield(),
             Shield_Medusa.shield_medusa(),
+        ]
+
+    def return_stairs(self):
+        return [
+            Stairs.stairs(),
         ]

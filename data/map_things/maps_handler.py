@@ -16,14 +16,16 @@ def set_map(map_name): # Load the map.
             chain = []
             line = preloaded_map.readline() # Read the current line.
             line = line.replace(":", "┗").replace("|", "┃").replace('-', '━').replace('_', '┛').replace('&', '┓').replace('!', '┏')
-
+            
             for i in range(len(line)): # Append each element in the "chain".
                 chain.append(line[i])
-
+            # print(line)
             chain.pop(-1) # Drop off the jump line.
             map.append(chain) # Append the "chain" to the map.
-
+            
         return map
+
+# set_map('test_map2.txt')
 
 '''
 ━ ┃ ┏ ┓ ┗ ┛ ┣ ┫ ┳ ┻ ╋
