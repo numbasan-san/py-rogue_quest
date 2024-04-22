@@ -19,7 +19,7 @@ def print_hud(__map, __player):
     for line in __map:
         floor = ''
         for sq in line:
-            if isinstance(sq, (basic_item, enemy, basic_equip, player, basic_environment_item)):
+            if isinstance(sq, (basic_item, enemy, player, basic_equip, basic_environment_item)):
                 sq = str(sq.sprite)
             floor += str(sq)
         print(floor)

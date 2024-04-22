@@ -4,7 +4,7 @@ from utilities import *
 
 class sword:
 
-    # name, sprite, x, y, damage, critic, defense
+    # name, sprite, x, y, damage, critic, defense, func, to_player, desc, nonfunc
     def start(self, x = 1, y = 1):
         name = 'Espada'
         sprite = '/'
@@ -12,7 +12,7 @@ class sword:
         critic = 5
         defense = 0
         to_player = True
-        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, desc = 'Es una espada normal', nonfunc = self.nonuse_function)
+        return basic_equip('sw-/', name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, desc = 'Es una espada normal', nonfunc = self.nonuse_function)
 
     def use_function(self, player):
         

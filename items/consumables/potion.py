@@ -4,11 +4,12 @@ from utilities import *
 
 class potion:
 
-    def start(self, x = 1, y = 1):
+    # name, sprite, x, y, func, to_player
+    def start(self):
         name = 'Poción'
         sprite = '+'
         to_player = True
-        return basic_item(name, sprite, x, y, self.use_function, to_player = to_player)
+        return basic_item('pt-+', name, sprite, 1, 1, self.use_function, to_player = to_player)
 
     def use_function(self, player):
         if player.hp < player.max_hp:

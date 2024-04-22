@@ -5,4 +5,4 @@ class banshee:
 
     # name, hp, damage, defense, sprite, x, y, exp, range
     def start(self):
-        return enemy('Banshee', 100, 5, 10, 'B', 2, 2, 20, 2)
+        return enemy('bs-b', 'Banshee', 100, 5, 10, 'B', 2, 2, 20, 2)

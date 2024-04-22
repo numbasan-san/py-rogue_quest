@@ -4,7 +4,7 @@ from utilities import *
 
 class shield:
 
-    # name, sprite, x, y, damage, critic, defense
+    # name, sprite, x, y, damage, critic, defense, func, to_player, desc, nonfunc
     def start(self, x = 1, y = 1):
         name = 'Escudo'
         sprite = ')'
@@ -12,7 +12,7 @@ class shield:
         critic = 0
         defense = 10
         to_player = True
-        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, desc = 'Es un escudo normal', nonfunc = self.nonuse_function)
+        return basic_equip('sh-)', name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, desc = 'Es un escudo normal', nonfunc = self.nonuse_function)
 
     def use_function(self, player):
         # check if the player have an shield or not.

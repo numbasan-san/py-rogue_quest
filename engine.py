@@ -1,8 +1,8 @@
 
-import input_handler, random, hud
+import input_handler, random, hud, os
 import data.map_things.json_handler as json_handler
 import data.level_things.levels as levels
-import data.safe_game.safe_game_handler as safe_game_handler
+import data.safe_game.saved_game_handler as saved_game_handler
 
 from items.basic_item import basic_item as basic_item
 from items.basic_equip import basic_equip as basic_equip
@@ -30,79 +30,83 @@ class engine:
         self.player = None
         self.dungeon_range = 0
         self.dungeon_lvlup = True
+        self.game_start = False
 
     def run(self):
         # time.sleep(5)
-        if self.dungeon_lvlup:
-            self.dungeon_range += 1
-            self.dungeon_lvlup = False
-            self.load_world()
-            safe_game_handler.save_run(self.map, self.player, self.dungeon_range)
+        if os.path.exists('data/safe_game/run_data.json') and not(self.game_start):
+            self.load_save_run()
+            self.game_start = True
         else:
+            if self.dungeon_lvlup:
+                self.dungeon_range += 1
+                self.dungeon_lvlup = False
+                self.load_world()
+                saved_game_handler.save_run(self.map, self.player, self.dungeon_range)
+            else:
 
-            hud.print_hud(self.map, self.player)
+                hud.print_hud(self.map, self.player)
 
-            # actions menu
-            text = "1. Mirar inventario.\n2. Moverse.\n3. Mirar Equipamento"
-            action = utilities.opciones('\nElija una de las opciones:\n' + text + '\nElección', ['1', '2', '3'])
+                # actions menu
+                text = "1. Mirar inventario.\n2. Moverse.\n3. Mirar Equipamento"
+                action = utilities.opciones('\nElija una de las opciones:\n' + text + '\nElección', ['1', '2', '3'])
 
-            if action == '1': # look into inventory choice
+                if action == '1': # look into inventory choice
 
-                hud.print_full_invent(self.player)
+                    hud.print_full_invent(self.player)
 
-                opt = (utilities.pregunta('Elija qué usar (0 para nada): ', 0, len(self.player.inventory))) - 1
+                    opt = (utilities.pregunta('Elija qué usar (0 para nada): ', 0, len(self.player.inventory))) - 1
 
-                if opt == -1:
-                    pass
-                else: # choose what to do with the selected object
-                    item = self.player.inventory[opt]
-                    text = "0. Nada.\n1. Usar.\n2. Soltar."
-                    inv_action = utilities.opciones(f'\nElija qué hacer con [{item.name}]:\n' + text + '\nElección', ['0', '1', '2'])
-                    if inv_action == '1': # use it
-                        item_used = item.func(self.player) if ((item.to_player)) else item.func()
-                        if item_used:
-                            (self.player.inventory).pop(opt)
-                        elif isinstance(item, (basic_equip)):
-                            (self.player.inventory).pop(opt)
-                    if inv_action == '2': # drop it
-                        utilities.print_effect(f'[{(self.player.inventory[opt]).name}] se soltó.')
-                        self.room_inv_save(item, self.player.x, self.player.y, True)
-                        (self.player.inventory).pop(opt)
-                    if inv_action == '0':
+                    if opt == -1:
                         pass
-
-            elif action == '2': # move choice
-                self.move_selection()
-
-            elif action == '3': # look into equipment choice
-                hud.print_full_equip(self.player)
-                if self.player.equipment["sword"] != None or self.player.equipment["shield"] != None:
-                    equip_opt = utilities.opciones(f'Elije (0 salir): ', ['0', '1', '2'])
-                    equip = self.player.equipment["sword"] if equip_opt == '1' else self.player.equipment["shield"]
-                    if equip != None:
-                        text = "0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar."
-                        equip_action = utilities.opciones(f'\nElija qué hacer con [{equip.name}]:\n{text}\nElección', ['0', '1', '2', '3'])
-
-                        # equipment actions menu
-                        if equip_action == '1': # unequip
-                            equip.nonfunc(self.player, f'\n{(equip).name} se desequipó.')
-                            (self.player.inventory).append(equip)
-                        if equip_action == '2': # inspect
-                            hud.print_equip_stats(equip)
-                        if equip_action == '3': # drop it
-                            self.room_inv_save(equip, self.player.x, self.player.y, True)
-                            equip.nonfunc(self.player, f'\n{(equip).name} se soltó.')
-                        if equip_action == '0': # nothing
+                    else: # choose what to do with the selected object
+                        item = self.player.inventory[opt]
+                        text = "0. Nada.\n1. Usar.\n2. Soltar."
+                        inv_action = utilities.opciones(f'\nElija qué hacer con [{item.name}]:\n' + text + '\nElección', ['0', '1', '2'])
+                        if inv_action == '1': # use it
+                            item_used = item.func(self.player) if ((item.to_player)) else item.func()
+                            if item_used:
+                                (self.player.inventory).pop(opt)
+                            elif isinstance(item, (basic_equip)):
+                                (self.player.inventory).pop(opt)
+                        if inv_action == '2': # drop it
+                            utilities.print_effect(f'[{(self.player.inventory[opt]).name}] se soltó.')
+                            self.room_inv_save(item, self.player.x, self.player.y, True)
+                            (self.player.inventory).pop(opt)
+                        if inv_action == '0':
                             pass
-                        # equipment actions menu end #
 
-                    else: utilities.print_effect('\nNada equipado.')
+                elif action == '2': # move choice
+                    self.move_selection()
 
-                else:
-                    utilities.print_effect('\nNada equipado.')
-            # actions menu end #
+                elif action == '3': # look into equipment choice
+                    hud.print_full_equip(self.player)
+                    if self.player.equipment["sword"] != None or self.player.equipment["shield"] != None:
+                        equip_opt = utilities.opciones(f'Elije (0 salir): ', ['0', '1', '2'])
+                        equip = self.player.equipment["sword"] if equip_opt == '1' else self.player.equipment["shield"]
+                        if equip != None:
+                            text = "0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar."
+                            equip_action = utilities.opciones(f'\nElija qué hacer con [{equip.name}]:\n{text}\nElección', ['0', '1', '2', '3'])
 
-            getpass('')
+                            # equipment actions menu
+                            if equip_action == '1': # unequip
+                                equip.nonfunc(self.player, f'\n{(equip).name} se desequipó.')
+                                (self.player.inventory).append(equip)
+                            if equip_action == '2': # inspect
+                                hud.print_equip_stats(equip)
+                            if equip_action == '3': # drop it
+                                self.room_inv_save(equip, self.player.x, self.player.y, True)
+                                equip.nonfunc(self.player, f'\n{(equip).name} se soltó.')
+                            if equip_action == '0': # nothing
+                                pass
+                            # equipment actions menu end #
+
+                        else: utilities.print_effect('\nNada equipado.')
+                    else:
+                        utilities.print_effect('\nNada equipado.')
+                # actions menu end #
+
+                getpass('')
 
     # the name explains it self
     def move_selection(self):   
@@ -242,12 +246,9 @@ class engine:
 
         damage = int(attacker.damage / (2 ** (victim.defense / attacker.damage))) # + weapon.critic
         damage = damage if damage > 1 else 1
-        victim.hp -= damage
+        victim.hp = (victim.hp - damage) if damage < victim.hp else 0
 
-        attacker_name = attacker.name if type(attacker) != type(self.player) else 'player'
-        victim_name = victim.name if type(victim) != type(self.player) else 'player'
-
-        utilities.print_effect(f'\nEl/La [{attacker_name}] atacó a [{victim_name}]. {str(damage)}')
+        utilities.print_effect(f'\nEl/La [{attacker.name}] atacó a [{victim.name}]. {str(damage)}')
 
         if isinstance(attacker, (player)): # if the player is the attacker
             player_sword = attacker.equipment['sword']
@@ -271,14 +272,23 @@ class engine:
         if victim.hp <= 0 and victim.state: # death verification
             (self.map[victim.x][victim.y]).state = not(victim.state)
             (self.map[victim.x][victim.y]).sprite = '%'
-            utilities.print_effect(f'\n[{victim_name}] murió.\n')
+            utilities.print_effect(f'\n[{victim.name}] murió.\n')
             if isinstance(victim, (player)): # when the player dies
+                self.player.state = False
                 utilities.print_effect(f'\n M O R T I S \n')
+
+                os.remove('data/safe_game/run_data.json') # delete the saved data
+                
                 self.end_exe = not(self.end_exe)
             else: # when the enemy dies
                 attacker.exp += victim.exp
 
 
+
+    def load_save_run(self):
+        self.map = (saved_game_handler.read_save_run())['map_data']
+        self.player = (saved_game_handler.read_save_run())['player_data'] # player
+        
     # setting world elements
     def load_world(self):
         # map's constructions
@@ -295,8 +305,8 @@ class engine:
     def load_entity(self, map_coors, start_entities, load_entity):
         for i in range(len(map_coors[load_entity + '_spawn_coords'])):
             while True:
-                random_entity = random.choice(start_entities)  # A random entity selected
-                entity = random_entity.start()  # starting the entity
+                random_entity = random.choice(start_entities) # A random entity selected
+                entity = random_entity.start() # starting the entity
 
                 # setting coors for each "entity spawn coors" in the map in turn
                 entity.x = map_coors[load_entity + '_spawn_coords'][i][0]

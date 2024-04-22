@@ -4,10 +4,11 @@ from utilities import *
 
 class stairs:
 
+    # name, sprite, x, y, func
     def start(self, x = 1, y = 1):
         name = 'Escaleras'
         sprite = '¬'
-        return basic_environment_item(name, sprite, x, y, self.use_function)
+        return basic_environment_item('st-¬', name, sprite, x, y, self.use_function)
 
     def use_function(self):
         # utilities.print_effect(f'\n¿Cómo se supone que haga esta cosa funcionar?\n')

@@ -1,8 +1,9 @@
 
 class basic_enemy:
 
-    def __init__(self, name, hp, damage, defense, sprite, x, y, exp, range, alter_status = None):
+    def __init__(self, code, name, hp, damage, defense, sprite, x, y, exp, range, alter_status = None):
         self.name = name
+        self.code = code
         self.hp = hp
         self.damage = damage
         self.defense = defense

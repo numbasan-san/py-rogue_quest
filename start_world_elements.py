@@ -11,7 +11,7 @@ class start_player:
 
     def __init__(self):
         # hp, damage, defense, sprite, x, y
-        self.player = player(100, 100, 0, '@')
+        self.player = player(1, 10, 0, '@')
 
     def mod_player_coords(self, x, y):
         self.player.x = x

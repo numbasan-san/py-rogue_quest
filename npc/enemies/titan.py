@@ -5,4 +5,4 @@ class titan:
 
     # name, hp, damage, defense, sprite, x, y, exp, range
     def start(self):
-        return enemy('Titan', 100, 70, 10, 'T', 2, 2, 1000, 2)
+        return enemy('tt-t', 'Titan', 100, 70, 10, 'T', 2, 2, 1000, 2)

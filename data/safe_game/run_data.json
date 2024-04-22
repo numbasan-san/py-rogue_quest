@@ -1,35 +1,28 @@
 {
     "player_data": [
         {
-            "max_hp": 110,
-            "hp": 101,
-            "base_damage": 120,
-            "damage": 140,
-            "base_defense": 10,
-            "defense": 30,
+            "max_hp": 1,
+            "hp": 1,
+            "base_damage": 10,
+            "damage": 10,
+            "base_defense": 0,
+            "defense": 0,
             "sprite": "@",
             "x": 2,
             "y": 1,
             "alter_status": null,
             "inv_limit": 10,
-            "inventory": [
-                "Escudo",
-                "Escudo",
-                "Escudo de Medusa"
-            ],
+            "inventory": [],
             "equipment": [
-                "Espada de fuego",
-                "Escudo de Medusa"
+                null,
+                null
             ],
-            "exp": 31,
-            "level": 2,
+            "exp": 0,
+            "level": 1,
             "state": true
         }
     ],
     "map_data": [
-        {
-            "dungeon_range": 5
-        },
         [
             "\u250f",
             "\u2501",
@@ -62,9 +55,7 @@
             "\u2503",
             [
                 {
-                    "name": "Titan",
-                    "x": 1,
-                    "y": 1
+                    "code": "kp-k"
                 }
             ],
             ".",
@@ -79,9 +70,7 @@
             ".",
             [
                 {
-                    "name": "Kelpie",
-                    "x": 1,
-                    "y": 12
+                    "code": "kp-k"
                 }
             ],
             "\u2503",
@@ -89,9 +78,7 @@
             "\u2503",
             [
                 {
-                    "name": "Titan",
-                    "x": 1,
-                    "y": 16
+                    "code": "gh-g"
                 }
             ],
             ".",
@@ -109,35 +96,27 @@
             ".",
             [
                 {
-                    "name": "Espada",
-                    "x": 2,
-                    "y": 2
+                    "code": "sw-/"
                 }
             ],
             ".",
             ".",
             [
                 {
-                    "name": "Poci\u00f3n de Poder",
-                    "x": 2,
-                    "y": 5
+                    "code": "pp-x"
                 }
             ],
             ".",
             [
                 {
-                    "name": "Escudo",
-                    "x": 2,
-                    "y": 7
+                    "code": "sm-]"
                 }
             ],
             ".",
             ".",
             [
                 {
-                    "name": "Titan",
-                    "x": 2,
-                    "y": 10
+                    "code": "gh-g"
                 }
             ],
             ".",
@@ -151,9 +130,7 @@
             ".",
             [
                 {
-                    "name": "Banshee",
-                    "x": 2,
-                    "y": 20
+                    "code": "gh-g"
                 }
             ],
             ".",
@@ -167,16 +144,12 @@
             "\u2503",
             [
                 {
-                    "name": "Escaleras",
-                    "x": 3,
-                    "y": 1
+                    "code": "st-\u00ac"
                 }
             ],
             [
                 {
-                    "name": "Poci\u00f3n de Poder",
-                    "x": 3,
-                    "y": 2
+                    "code": "sw-/"
                 }
             ],
             ".",
@@ -217,9 +190,7 @@
             ".",
             [
                 {
-                    "name": "Poci\u00f3n",
-                    "x": 4,
-                    "y": 10
+                    "code": "sw-/"
                 }
             ],
             ".",
@@ -244,18 +215,14 @@
             "#",
             [
                 {
-                    "name": "Poci\u00f3n",
-                    "x": 5,
-                    "y": 2
+                    "code": "pp-x"
                 }
             ],
             ".",
             ".",
             [
                 {
-                    "name": "Espada",
-                    "x": 5,
-                    "y": 5
+                    "code": "sw-/"
                 }
             ],
             ".",
@@ -289,9 +256,7 @@
             ".",
             [
                 {
-                    "name": "Escudo",
-                    "x": 6,
-                    "y": 6
+                    "code": "sm-]"
                 }
             ],
             ".",
@@ -306,9 +271,7 @@
             ".",
             [
                 {
-                    "name": "Escudo de Medusa",
-                    "x": 6,
-                    "y": 17
+                    "code": "fs-|"
                 }
             ],
             ".",
@@ -326,9 +289,7 @@
             ".",
             [
                 {
-                    "name": "Poci\u00f3n de Poder",
-                    "x": 7,
-                    "y": 2
+                    "code": "pp-x"
                 }
             ],
             ".",
@@ -340,9 +301,7 @@
             ".",
             [
                 {
-                    "name": "Espada de fuego",
-                    "x": 7,
-                    "y": 10
+                    "code": "pt-+"
                 }
             ],
             ".",
@@ -351,9 +310,7 @@
             ".",
             [
                 {
-                    "name": "Poci\u00f3n de Poder",
-                    "x": 7,
-                    "y": 15
+                    "code": "pt-+"
                 }
             ],
             ".",
@@ -395,5 +352,6 @@
             "\u2501",
             "\u251b"
         ]
-    ]
+    ],
+    "map_range": 1
 }

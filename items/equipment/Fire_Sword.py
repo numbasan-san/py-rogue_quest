@@ -5,15 +5,15 @@ from items.basic_equip import basic_equip
 
 class fire_sword:
 
-    # name, sprite, x, y, damage, critic, defense
-    def start(self, x = 1, y = 1):
+    # name, sprite, x, y, damage, critic, defense, func, to_player, desc, nonfunc
+    def start(self):
         name = 'Espada de fuego'
         sprite = '|'
         damage = 20
         critic = 10
         defense = 0
         to_player = True
-        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = "Puede causar quemaduras a quien se le ataque", nonfunc = self.nonuse_function)
+        return basic_equip('fs-|', name, sprite, 1, 1, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = "Puede causar quemaduras a quien se le ataque", nonfunc = self.nonuse_function)
     
     def burn(self, victim): # sword's efect
         victim.hp -= 1

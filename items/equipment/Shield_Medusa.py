@@ -5,7 +5,7 @@ from utilities import *
 
 class shield_medusa:
 
-    # name, sprite, x, y, damage, critic, defense
+    # name, sprite, x, y, damage, critic, defense, func, to_player, desc, nonfunc
     def start(self, x = 1, y = 1):
         name = 'Escudo de Medusa'
         sprite = ']'
@@ -13,7 +13,7 @@ class shield_medusa:
         critic = 0
         defense = 20
         to_player = True
-        return basic_equip(name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = "Puede convertir en piedra a quien ataque al portador", nonfunc = self.nonuse_function)
+        return basic_equip('sm-]', name, sprite, x, y, damage, critic, defense, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = "Puede convertir en piedra a quien ataque al portador", nonfunc = self.nonuse_function)
 
     def petrification(self, victim):
         victim.hp = 0

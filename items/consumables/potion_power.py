@@ -4,12 +4,12 @@ from utilities import *
 
 class potion_power:
 
-    # name, sprite, x, y
-    def start(self, x = 1, y = 1):
+    # name, sprite, x, y, func, to_player
+    def start(self): 
         name = 'Poción de Poder'
         sprite = 'x'
         to_player = True
-        return basic_item(name, sprite, x, y, self.use_function, to_player = to_player)
+        return basic_item('pp-x', name, sprite, 1, 1, self.use_function, to_player = to_player)
 
     def use_function(self, player):
         player.damage += 10
