@@ -9,7 +9,7 @@ from start_world_elements import player
 
 from utilities import *
 
-def print_hud(__map, __player):
+def print_hud(__map, __player, level):
     os.system('cls')
     
     # player print
@@ -26,7 +26,7 @@ def print_hud(__map, __player):
     # map print end #
 
     # print player stats
-    print(f'HP: {__player.hp}/{__player.max_hp}. Atk: {__player.damage}/{__player.base_damage}. Def: {__player.defense}/{__player.base_defense}. Lvl(Exp): {__player.level}({__player.exp}).')
+    print(f'HP: {__player.hp}/{__player.max_hp}. Atk: {__player.damage}/{__player.base_damage}. Def: {__player.defense}/{__player.base_defense}. Lvl(Exp): {__player.level}({__player.exp}). Floor: {level}')
     # print player stats end #
 
     # inventory's print

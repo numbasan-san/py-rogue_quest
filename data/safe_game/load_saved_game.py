@@ -3,11 +3,11 @@ import json
 from player import player as Player
 from data.safe_game.objects_handler import return_object
 
-def load_world():
+def load_map():
     # Cargar el mapa desde el archivo JSON
-    with open('data/safe_game/run_data.json', 'r') as file:
-        data = json.load(file)
-        map_data = data['map_data']
+    file = open('data/safe_game/run_data.json', 'r')
+    data = json.load(file)
+    map_data = data['map_data']
     
     # Crear un array bidimensional para almacenar el mapa
     map_array = []
@@ -20,7 +20,7 @@ def load_world():
                 for obj in cell:
                     if isinstance(obj, dict):
                         obj_instance = (return_object(obj['code'])()).start()
-                        row_array.append(obj_instance.sprite)
+                        row_array.append(obj_instance)
                     else:
                         row_array.append(obj)
             else:
@@ -29,8 +29,11 @@ def load_world():
 
     return map_array
 
-def load_player(serialized_player):
-    player_data = serialized_player[0]
+def load_player():
+    file = open('data/safe_game/run_data.json', 'r')
+    data = json.load(file)
+    serialized_player = (data['player_data'])[0]
+    player_data = serialized_player
 
     player = Player(
         hp=player_data['max_hp'],
@@ -42,15 +45,18 @@ def load_player(serialized_player):
         alter_status=player_data['alter_status']
     )
     player.name = 'player'
-    player.hp = player_data['hp']
-    player.damage = player_data['damage']
-    player.defense = player_data['defense']
+    player.max_hp = player_data['max_hp']
+    player.base_damage = player_data['base_damage']
+    player.base_defense = player_data['base_defense']
     player.inv_limit = player_data['inv_limit']
-    player.equipment = [((load_objects(obj)).sprite if (load_objects(obj)) != None else 'NO') for obj in player_data['equipment']]
-    player.inventory = [((load_objects(obj)).sprite if (load_objects(obj)) != None else 'NO') for obj in player_data['inventory']]
     player.exp = player_data['exp']
     player.level = player_data['level']
     player.state = player_data['state']
+    player.inventory = [((load_objects(obj)) if (load_objects(obj)) != None else 'NO') for obj in player_data['inventory']]
+
+    equipment = [((load_objects(obj)) if (load_objects(obj)) != None else None) for obj in player_data['equipment']]
+    player.equipment['sword'] = equipment[0]
+    player.equipment['shield'] = equipment[1]
 
     return player
 
@@ -58,3 +64,8 @@ def load_objects(obj):
     if obj is not None:
         return ((return_object(obj)()).start())
     return None
+
+def load_dungeon_range():
+    file = open('data/safe_game/run_data.json', 'r')
+    data = json.load(file)
+    return (data['map_range'])

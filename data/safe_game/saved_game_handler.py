@@ -66,6 +66,3 @@ def save_run(map_data, player,map_range):
     
     with open(f'{PATH_FILE}.json', 'w') as file:
         json.dump({'player_data': serialized_player, 'map_data': serialized_map, 'map_range': map_range}, file, indent=4)
-
-def read_save_run():
-    return json.load(open(f'{PATH_FILE}.json', 'r'))

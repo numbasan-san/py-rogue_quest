@@ -9,14 +9,9 @@ from npc.enemies import *
 
 class start_player:
 
-    def __init__(self):
+    def return_player():
         # hp, damage, defense, sprite, x, y
-        self.player = player(1, 10, 0, '@')
-
-    def mod_player_coords(self, x, y):
-        self.player.x = x
-        self.player.y = y
-        return self.player
+        return player(100, 100, 0, '@')
     
 class start_enemies:
 
