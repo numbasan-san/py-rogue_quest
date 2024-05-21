@@ -42,7 +42,7 @@ def print_hud(__map, __player, level):
     shield = 'NO' if __player.equipment["shield"] == None else (__player.equipment["shield"]).name
     print(f'Arma: [{sword}]. Escudo: [{shield}].')
 
-def print_full_invent(__player):
+def print_full_inventory(__player):
 
     print('\n-----Inventario-----')
     if __player.inventory != []:

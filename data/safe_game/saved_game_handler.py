@@ -1,27 +1,8 @@
 
-from player import player as player
-from items.basic_item import basic_item as basic_item
-from items.basic_equip import basic_equip as basic_equip
-from npc.basic_enemy import basic_enemy as basic_enemy
-from items.basic_environment_item import basic_environment_item as basic_environment_item
+import json
 
 PATH_FILE = 'data/safe_game/run_data'
 
-import json
-
-def serialize_object(object):
-    serialized_objects = []
-
-    if isinstance(object, (basic_item, basic_enemy, basic_equip, basic_environment_item)):
-        serialized_objects.append({
-            'code': object.code
-        })
-    elif isinstance(object, (player)):
-        serialized_objects.append(
-            serialize_player_full(object)
-        )
-
-    return serialized_objects
 
 def serialize_player_full(player):
 
@@ -49,20 +30,27 @@ def serialize_player_full(player):
     return serialized_player
 
 def serialize_map(map_data):
-    serialized_map = []
+    items_in_map = []
     for row in map_data:
         serialized_row = []
         for item in row:
-            if isinstance(item, str):
-                serialized_row.append(str(item))
-            else:
-                serialized_row.append(serialize_object(item))
-        serialized_map.append(serialized_row)
-    return serialized_map
+            if not(isinstance(item, str)):
+                serialized_row.append('.')
+                items_in_map.append({
+                    'code': item.code,
+                    'x': item.x,
+                    'y': item.y
+                })
+    return items_in_map
 
-def save_run(map_data, player,map_range):
-    serialized_map = serialize_map(map_data)
-    serialized_player = serialize_object(player)
+def save_run(map_data, player, map_range, map_name):
+    items_in_map = serialize_map(map_data)
+    serialized_player = serialize_player_full(player)
     
     with open(f'{PATH_FILE}.json', 'w') as file:
-        json.dump({'player_data': serialized_player, 'map_data': serialized_map, 'map_range': map_range}, file, indent=4)
+        json.dump({
+            'player_data': serialized_player,
+            'map_name': map_name,
+            'map_range': map_range,
+            'items': items_in_map
+        }, file, indent=4)

@@ -5,40 +5,35 @@ from data.safe_game.objects_handler import return_object
 
 def load_map():
     # Cargar el mapa desde el archivo JSON
-    file = open('data/safe_game/run_data.json', 'r')
-    data = json.load(file)
-    map_data = data['map_data']
-    
-    # Crear un array bidimensional para almacenar el mapa
-    map_array = []
+    maps_file = open('data/map_things/maps_data.json', 'r')
+    run_file = open('data/safe_game/run_data.json', 'r')
+
+    maps_data = json.load(maps_file)
+    run_data = json.load(run_file)
+
+    maps_list = maps_data
+    for map_i in maps_list:
+        if map_i['name'] == run_data['map_name']:
+            map_data = map_i['map']
     
     # Procesar cada celda del mapa
-    for row in map_data:
-        row_array = []
-        for cell in row:
-            if isinstance(cell, list):
-                for obj in cell:
-                    if isinstance(obj, dict):
-                        obj_instance = (return_object(obj['code'])()).start()
-                        row_array.append(obj_instance)
-                    else:
-                        row_array.append(obj)
-            else:
-                row_array.append(cell)
-        map_array.append(row_array)
+    for obj in run_data['items']:
+        obj_instance = (return_object(obj['code'])()).start(obj['x'], obj['y'])
+        obj_instance.x, obj_instance.y = obj['x'], obj['y']
+        map_data[obj_instance.x][obj_instance.y] = obj_instance
 
-    return map_array
+    return map_data
 
 def load_player():
     file = open('data/safe_game/run_data.json', 'r')
     data = json.load(file)
-    serialized_player = (data['player_data'])[0]
+    serialized_player = (data['player_data'])
     player_data = serialized_player
 
     player = Player(
-        hp=player_data['max_hp'],
-        damage=player_data['base_damage'],
-        defense=player_data['base_defense'],
+        hp=player_data['hp'],
+        damage=player_data['damage'],
+        defense=player_data['defense'],
         sprite=player_data['sprite'],
         x=player_data['x'],
         y=player_data['y'],

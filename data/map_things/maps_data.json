@@ -1,12 +1,6 @@
 [
     {
         "name": "test_map",
-        "stairs_spawn_coords": [
-            [
-                3,
-                1
-            ]
-        ],
         "player_spawn_coords": [
             2,
             1
@@ -86,6 +80,12 @@
             [
                 7,
                 2
+            ]
+        ],
+        "stairs_spawn_coords": [
+            [
+                3,
+                1
             ]
         ],
         "map": [
@@ -372,12 +372,6 @@
                 2
             ]
         ],
-        "stairs_spawn_coords": [
-            [
-                1,
-                3
-            ]
-        ],
         "items_spawn_coords": [
             [
                 8,
@@ -394,6 +388,12 @@
             [
                 3,
                 5
+            ]
+        ],
+        "stairs_spawn_coords": [
+            [
+                1,
+                3
             ]
         ],
         "map": [

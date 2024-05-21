@@ -30,7 +30,7 @@ def find_level(lvl, xp):
         while True:
             lvl += 1
             xp_limit = (30 * (2 ** (lvl - 1))) - 1
-            if xp <= xp_limit:
+            if xp < xp_limit:
                 break
 
     return lvl
