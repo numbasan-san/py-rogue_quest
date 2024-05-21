@@ -2,21 +2,9 @@
 import os
 
 from npc.basic_enemy import basic_enemy as basic_enemy
-from npc.ia.enemies import basic_enemie_ia as enemy_ia
 from utilities import *
 from start_world_elements import player
 
-
-def enemies_movement(map, player): # enemies movement
-    enemies = []
-    for x in map:
-        for element in x:
-            if isinstance(element, (basic_enemy)):
-                enemy = element
-                if enemy.state:
-                    print(f'enemigo detectado: {enemy.sprite} ({element.x}, {element.y})')
-                    enemies.append(enemy)
-    enemy_ia.move_enemies(map, player, enemies)
 
 # the name explains it self
 def combat_logic(map, attacker, victim):

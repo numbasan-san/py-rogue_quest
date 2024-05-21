@@ -19,7 +19,7 @@ def load_map():
     # Procesar cada celda del mapa
     for obj in run_data['items']:
         obj_instance = (return_object(obj['code'])()).start(obj['x'], obj['y'])
-        obj_instance.x, obj_instance.y = obj['x'], obj['y']
+        # obj_instance.x, obj_instance.y = obj['x'], obj['y']
         map_data[obj_instance.x][obj_instance.y] = obj_instance
 
     return map_data

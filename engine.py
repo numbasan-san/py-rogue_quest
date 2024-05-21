@@ -8,7 +8,6 @@ import data.safe_game.load_saved_game as load_saved_game
 from items.basic_item import basic_item as basic_item
 from items.basic_equip import basic_equip as basic_equip
 from npc.basic_enemy import basic_enemy as basic_enemy
-from npc.ia.enemies import basic_enemie_ia as enemy_ia
 from items.basic_environment_item import basic_environment_item as basic_environment_item
 
 from getpass import getpass
@@ -260,6 +259,9 @@ class engine:
 
 
 
+    '''                             '' '
+        world's and data's loaders
+    ' ''                             '''
 
     def load_save_run(self):
         self.map = (load_saved_game.load_map())

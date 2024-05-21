@@ -12,7 +12,7 @@ class banshee:
     # Función de IA de la Banshee
     def strategy_ia(self, map):
         x, y = self.x, self.y
-        radius = 2
+        radius = 1
         
         # Verificar las casillas en el radio especificado
         for dx in range(-radius, radius + 1):

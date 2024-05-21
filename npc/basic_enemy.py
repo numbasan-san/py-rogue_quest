@@ -1,5 +1,9 @@
 
 import heapq
+from room_inv_handler import room_inv_handler
+from items.basic_item import basic_item as basic_item
+from items.basic_equip import basic_equip as basic_equip
+from items.basic_environment_item import basic_environment_item as basic_environment_item
 
 class basic_enemy:
 
@@ -18,6 +22,7 @@ class basic_enemy:
         self.alter_status = alter_status
         self.move_ia = self.move
         self.strategy_ia = strategy_ia
+        self.handler = room_inv_handler()
 
     def dijkstra(self, map, player_position):
         distance = {}
@@ -52,7 +57,7 @@ class basic_enemy:
                 if 0 <= nx < len(map) and map[nx][ny] not in walls:
                     if isinstance(map[nx][ny], basic_enemy) and map[nx][ny] is not self and map[nx][ny].state:
                         pass
-                    elif map[nx][ny] == '.' or map[nx][ny] == player.sprite or (isinstance(map[nx][ny], basic_enemy) and not map[nx][ny].state):
+                    elif map[nx][ny] == '.' or map[nx][ny] == player.sprite or (isinstance(map[nx][ny], basic_enemy) and not map[nx][ny].state) or isinstance(map[nx][ny], (basic_item, basic_environment_item, basic_equip)):
                         distance = player_distance.get((nx, ny), float('inf'))
                         possible_moves.append(((nx, ny), distance))
 
@@ -63,16 +68,25 @@ class basic_enemy:
                 if 0 <= ny < len(map[0]) and map[nx][ny] not in walls:
                     if isinstance(map[nx][ny], basic_enemy) and map[nx][ny] is not self and map[nx][ny].state:
                         pass
-                    elif map[nx][ny] == '.' or map[nx][ny] == player.sprite or (isinstance(map[nx][ny], basic_enemy) and not map[nx][ny].state):
+                    elif map[nx][ny] == '.' or map[nx][ny] == player.sprite or (isinstance(map[nx][ny], basic_enemy) and not map[nx][ny].state) or isinstance(map[nx][ny], (basic_item, basic_environment_item, basic_equip)):
                         distance = player_distance.get((nx, ny), float('inf'))
                         possible_moves.append(((nx, ny), distance))
             
+            '''
+                Aún persiste el tema de que no suelta el objeto, solo el piso. Pero almenos no se queda quieto ante un objeto.
+            '''
+
             if possible_moves:
                 possible_moves.sort(key=lambda pos: pos[1])
                 next_move, _ = possible_moves[0]
                 if next_move == player_position:
                     print(f"{self.name} ha alcanzado al jugador!")
                 else:
-                    map[next_move[0]][next_move[1]] = self
-                    map[x][y] = '.'
-                    self.x, self.y = next_move
+                    # Handle item collection and dropping
+                    if isinstance(map[self.x][self.y], (basic_item, basic_environment_item, basic_equip)):
+                        self.handler.handle_enemy_collect(self, map)
+                    else:
+                        map[next_move[0]][next_move[1]] = self
+                        map[x][y] = '.'
+                        self.x, self.y = next_move
+                        self.handler.drop_item(self, map)
