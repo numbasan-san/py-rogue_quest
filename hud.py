@@ -15,6 +15,11 @@ def print_hud(__map, __player, level):
     # player print
     __map[__player.x][__player.y] = __player
 
+    # for x in __map:
+    #     for entite in x:
+    #         if isinstance(entite, enemy):
+    #             __map[entite.x][entite.y] = entite
+
     # map print
     for line in __map:
         floor = ''

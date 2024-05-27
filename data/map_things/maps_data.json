@@ -351,8 +351,8 @@
     {
         "name": "test_map2",
         "player_spawn_coords": [
-            1,
-            2
+            6,
+            20
         ],
         "enemys_spawn_coords": [
             [
