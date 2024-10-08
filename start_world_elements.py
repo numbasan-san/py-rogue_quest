@@ -11,7 +11,7 @@ class start_player:
 
     def __init__(self):
         # hp, damage, defense, sprite, x, y
-        self.player = player(6, 100, 0, '@')
+        self.player = player(31, 100, 0, '@')
     
     def get_player(self):
         return self.player
@@ -20,7 +20,6 @@ class start_player:
         self.player.x = x
         self.player.y = y
         return self.player
-    
     
 class start_enemies:
 
