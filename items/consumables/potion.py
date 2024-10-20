@@ -2,13 +2,13 @@
 from items.basic_item import basic_item
 from utilities import *
 
-class potion:
+class potion(basic_item):
 
-    def start(self, x = 1, y = 1):
+    def __init__(self, x=1, y=1):
         name = 'Poción'
         sprite = '+'
         to_player = True
-        return basic_item(name, sprite, x, y, self.use_function, to_player = to_player)
+        super().__init__(name, sprite, x, y, func=self.use_function, to_player=to_player)
 
     def use_function(self, player):
         if player.hp < player.max_hp:

@@ -2,14 +2,13 @@
 from items.basic_item import basic_item
 from utilities import *
 
-class potion_power:
+class potion_power(basic_item):
 
-    # name, sprite, x, y
-    def start(self, x = 1, y = 1):
+    def __init__(self, x=1, y=1):
         name = 'Poción de Poder'
         sprite = 'x'
         to_player = True
-        return basic_item(name, sprite, x, y, self.use_function, to_player = to_player)
+        super().__init__(name, sprite, x, y, func=self.use_function, to_player=to_player)
 
     def use_function(self, player):
         player.damage += 10

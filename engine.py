@@ -53,9 +53,10 @@ class engine:
                         if isinstance(cell, basic_enemy):
                             enemy = cell
                             if enemy.state:
-                                enemy.move_ia(self.map, self.player)
                                 if enemy.strategy_ia:
                                     enemy.strategy_ia(self.map)
+                                else:
+                                    enemy.move(self.map, self.player)
 
             if not self.player.state: # if the player is dead
                 utilities.print_effect(f'\n[player] murió.')
@@ -278,9 +279,9 @@ class engine:
             self.map[player_x][player_y] = '.'
 
 
-    '''                             '' '
-        world's and data's loaders
-    ' ''                             '''
+    '''                             ' '' 
+        World's and data's loaders
+    '' '                             '''
     # setting world elements
     def load_world(self):
         # map's constructions
@@ -291,25 +292,30 @@ class engine:
         self.player = self.start_player.mod_player_coords(
             (self.map_class['player_spawn_coords'])[0], 
             (self.map_class['player_spawn_coords'])[1]
-            )
-        self.load_entity(self.map_class, self.items.return_items(), 'items') # items print
-        self.load_entity(self.map_class, self.start_enemies.return_enemies(), 'enemys') # enemies print
-        self.load_entity(self.map_class, self.items.return_stairs(), 'stairs') # stairs print
+        )
+        
+        # Load items, enemies, and stairs
+        self.load_entity(self.map_class, self.items.return_items(), 'items')   # items print
+        self.load_entity(self.map_class, self.start_enemies.return_enemies(), 'enemys')  # enemies print
+        self.load_entity(self.map_class, self.items.return_stairs(), 'stairs')   # stairs print
 
     # to load entity
     def load_entity(self, map_coors, start_entities, load_entity):
         for i in range(len(map_coors[load_entity + '_spawn_coords'])):
             while True:
-                random_entity = random.choice(start_entities)  # A random entity selected
-                entity = random_entity.start()  # starting the entity
-
-                # setting coors for each "entity spawn coors" in the map in turn
+                random_entity_class = random.choice(start_entities)  # Random entity class selected
+                
+                # Create entity instance directly using __init__
+                entity = random_entity_class()  # Create an instance of the entity class
+                
+                # setting coordinates for each "entity spawn coordinates" in the map
                 entity.x = map_coors[load_entity + '_spawn_coords'][i][0]
                 entity.y = map_coors[load_entity + '_spawn_coords'][i][1]
 
                 # Check if the entity is an enemy and its range is within dungeon_floor
-                if (isinstance(entity, basic_enemy) and entity.range <= self.dungeon_floor)\
-                    or isinstance(entity, (basic_item, basic_environment_item)):
+                if (isinstance(entity, basic_enemy) and entity.range <= self.dungeon_floor) or \
+                isinstance(entity, (basic_item, basic_environment_item)):
+                    
                     # entity print
                     self.map[entity.x][entity.y] = entity
                     break  # Break the while loop if entity is successfully placed

@@ -1,4 +1,6 @@
 
+from colorama import *
+
 class basic_environment_item:
 
     def __init__(self, name, sprite, x, y, func = None):
@@ -6,4 +8,5 @@ class basic_environment_item:
         self.sprite = sprite
         self.x = x
         self.y = y
+        self.color = Fore.LIGHTCYAN_EX
         self.func = func
