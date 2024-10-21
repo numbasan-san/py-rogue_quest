@@ -1,15 +1,16 @@
 
 from items.basic_item import basic_item
-from utilities import *
+from common_utilities.utilities import *
 
-class potion_power:
+class potion_power(basic_item):
 
-    # name, sprite, x, y, func, to_player
-    def start(self, x, y): 
+    def __init__(self, x=1, y=1):
         name = 'Poción de Poder'
         sprite = 'x'
+        desc = 'Otorga 10 de ataque'
         to_player = True
-        return basic_item('pp-x', name, sprite, x, y, self.use_function, to_player = to_player)
+        # name, sprite, x, y, rarity, func, desc, to_player
+        super().__init__(name, sprite, x, y, 2, func=self.use_function, desc=desc, to_player=to_player)
 
     def use_function(self, player):
         player.damage += 10

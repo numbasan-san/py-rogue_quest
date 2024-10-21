@@ -1,10 +1,8 @@
 
 class player:
 
-    def __init__(self, hp, damage, defense, sprite, x = 1, y = 1, alter_status = None):
-        self.name = 'player'
-
-        self.max_hp = hp
+    def __init__(self, hp, damage, defense, sprite, color, x = 1, y = 1, alter_status = None):
+        self.max_hp = 50
         self.hp = hp
         
         self.base_damage = damage
@@ -29,3 +27,5 @@ class player:
         self.level = 1
         
         self.state = True
+
+        self.color = color

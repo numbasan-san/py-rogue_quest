@@ -1,5 +1,5 @@
 
-from utilities import *
+from common_utilities.utilities import utilities
 
 def valid_move(x, y, map, player_around):
 

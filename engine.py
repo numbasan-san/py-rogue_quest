@@ -1,18 +1,17 @@
 
-import input_handler, random, hud, os, combat_logic
+from colorama import Fore
+import input_handler, random, hud, combat_logic
 import data.map_things.json_handler as json_handler
 import data.level_things.levels as levels
-import data.safe_game.saved_game_handler as saved_game_handler
-import data.safe_game.load_saved_game as load_saved_game
 
+from common_utilities.utilities import *
 from items.basic_item import basic_item as basic_item
 from items.basic_equip import basic_equip as basic_equip
-from npc.basic_enemy import basic_enemy as basic_enemy
 from items.basic_environment_item import basic_environment_item as basic_environment_item
+from npc.basic_enemy import basic_enemy as basic_enemy
 
 from getpass import getpass
-from utilities import *
-from start_world_elements import start_player, start_enemies, start_items, player
+from start_world_elements import start_player, start_enemies, start_items
 
 class engine:
 
@@ -24,31 +23,25 @@ class engine:
             'in_use': False
         }
         self.end_exe = False
+        self.start_player = start_player() # to return the player
         self.start_enemies = start_enemies() # to return the enemies
         self.items = start_items() # to return the items
-        self.player = start_player.return_player() # to return the player
         self.map = None
-        self.dungeon_range = 1
-        self.dungeon_lvlup = False
-
-        if os.path.exists('data/safe_game/run_data.json'):
-            self.load_save_run()
-            self.dungeon_lvlup = False
-        else:
-            self.load_world()
-            saved_game_handler.save_run(self.map, self.player, self.dungeon_range, self.map_class['name'])
-
+        self.player = None
+        self.dungeon_floor = 0
+        self.dungeon_lvlup = True
+        self.to_next_turn = 1
 
     def run(self):
         # time.sleep(5)
         if self.dungeon_lvlup:
-            self.dungeon_range += 1
+            self.dungeon_floor += 1
             self.dungeon_lvlup = False
             self.load_world()
-            saved_game_handler.save_run(self.map, self.player, self.dungeon_range, self.map_class['name'])
         else:
 
-            hud.print_hud(self.map, self.player, self.dungeon_range)
+            hud.print_hud(self.map, self.player)
+            # print(self.to_next_turn)
 
             # actions menu
             text = "1. Mirar inventario.\n2. Moverse.\n3. Mirar Equipamento"
@@ -57,76 +50,105 @@ class engine:
             # actions menu end #
 
             # enemies movement
-            if end_player_turn:
-                for x in range(len(self.map)):
-                    for y in range(len(self.map[x])):
-                        if isinstance(self.map[x][y], basic_enemy):
-                            enemy = self.map[x][y]
+            if end_player_turn or self.to_next_turn >= 5:
+                self.to_next_turn = 1
+                for row in self.map:
+                    for cell in row:
+                        if isinstance(cell, basic_enemy):
+                            enemy = cell
                             if enemy.state:
-                                enemy.move_ia(self.map, self.player)
-                                if not(enemy.strategy_ia == None):
+                                if enemy.strategy_ia:
                                     enemy.strategy_ia(self.map)
+                                else:
+                                    enemy.move(self.map, self.player)
 
+            if not self.player.state: # if the player is dead
+                utilities.print_effect(f'\n[player] murió.')
+                utilities.print_effect(f'\n\n\n-+-+-+-+- M O R T I S -+-+-+-+-\n', color=Fore.RED)
+                self.end_exe = True
             getpass('')
 
-    # menu's actions
     def menu_actions(self, action):
-        if action == '1': # look into inventory choice
-
-            hud.print_full_inventory(self.player)
-
-            opt = (utilities.pregunta('Elija qué usar (0 para nada): ', 0, len(self.player.inventory))) - 1
-
-            if opt == -1:
-                pass
-            else: # choose what to do with the selected object
-                item = self.player.inventory[opt]
-                text = "0. Nada.\n1. Usar.\n2. Soltar."
-                inv_action = utilities.opciones(f'\nElija qué hacer con [{item.name}]:\n' + text + '\nElección', ['0', '1', '2'])
-                if inv_action == '1': # use it
-                    item_used = item.func(self.player) if ((item.to_player)) else item.func()
-                    if item_used:
-                        (self.player.inventory).pop(opt)
-                    elif isinstance(item, (basic_equip)):
-                        (self.player.inventory).pop(opt)
-                if inv_action == '2': # drop it
-                    utilities.print_effect(f'[{(self.player.inventory[opt]).name}] se soltó.')
-                    self.room_inv_save(item, self.player.x, self.player.y, True)
-                    (self.player.inventory).pop(opt)
-                if inv_action == '0':
-                    pass
-
-        elif action == '2': # move choice
+        if action == '1':  # look inventory
+            self.handle_inventory()
+            self.to_next_turn += 1
+        elif action == '2':  # move
             self.move_selection()
+            self.to_next_turn = 1
             return True
 
-        elif action == '3': # look into equipment choice
-            hud.print_full_equip(self.player)
-            if self.player.equipment["sword"] != None or self.player.equipment["shield"] != None:
-                equip_opt = utilities.opciones(f'Elije (0 salir): ', ['0', '1', '2'])
-                equip = self.player.equipment["sword"] if equip_opt == '1' else self.player.equipment["shield"]
-                if equip != None:
-                    text = "0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar."
-                    equip_action = utilities.opciones(f'\nElija qué hacer con [{equip.name}]:\n{text}\nElección', ['0', '1', '2', '3'])
-
-                    # equipment actions menu
-                    if equip_action == '1': # unequip
-                        equip.nonfunc(self.player, f'\n{(equip).name} se desequipó.')
-                        (self.player.inventory).append(equip)
-                    if equip_action == '2': # inspect
-                        hud.print_equip_stats(equip)
-                    if equip_action == '3': # drop it
-                        self.room_inv_save(equip, self.player.x, self.player.y, True)
-                        equip.nonfunc(self.player, f'\n{(equip).name} se soltó.')
-                    if equip_action == '0': # nothing
-                        pass
-                    # equipment actions menu end #
-
-                else: utilities.print_effect('\nNada equipado.')
-            else:
-                utilities.print_effect('\nNada equipado.')
+        elif action == '3':  # look equipment
+            self.handle_equipment()
+            self.to_next_turn += 1
 
         return False
+
+    def handle_inventory(self):
+        hud.print_full_inventory(self.player)
+
+        opt = utilities.pregunta('Elija qué usar (0 para nada): ', 0, len(self.player.inventory)) - 1
+        
+        def use_item(item, opt):
+            item_used = item.func(self.player) if item.to_player else item.func()
+            if item_used or isinstance(item, basic_equip):
+                self.player.inventory.pop(opt)
+                utilities.print_effect(f'\n[{item.name}] fue utilizado.')
+
+        def drop_item(item, opt):
+            utilities.print_effect(f'[{item.name}] se soltó.')
+            self.room_inv_save(item, self.player.x, self.player.y, True)
+            self.player.inventory.pop(opt)
+        
+        if opt == -1:
+            return
+
+        item = self.player.inventory[opt]
+        action_options = {
+            '0': lambda: None,  # No hacer nada
+            '1': lambda: use_item(item, opt), # Usar objeto
+            '2': lambda: drop_item(item, opt), # Soltar objeto
+            '3': lambda:  hud.print_item_stats(item) # Inspeccionar objeto
+        }
+
+        text = "0. Nada.\n1. Usar.\n2. Soltar.\n3. Inspeccionar."
+        inv_action = utilities.opciones(f'\nElija qué hacer con [{item.name}]:\n{text}\nElección', ['0', '1', '2', '3'])
+        action_options[inv_action]()
+
+    def handle_equipment(self):
+        hud.print_full_equip(self.player)
+        sword, shield = self.player.equipment["sword"], self.player.equipment["shield"]
+
+        if sword or shield:
+            equip_opt = utilities.opciones('Elija (0 para salir): ', ['0', '1', '2'])
+            equip = sword if equip_opt == '1' else shield
+
+            if equip:
+                self.manage_equipment(equip)
+            else:
+                utilities.print_effect('Nada equipado.')
+        else:
+            utilities.print_effect('Nada equipado.')
+
+    def manage_equipment(self, equip):
+        text = "0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar."
+        equip_action = utilities.opciones(f'\nElija qué hacer con [{equip.name}]:\n{text}\nElección', ['0', '1', '2', '3'])
+        
+        def unequip_item(equip):
+            equip.nonfunc(self.player, f'\n[{equip.name}] se desequipó.')
+            self.player.inventory.append(equip)
+
+        def drop_equipped_item(equip):
+            self.room_inv_save(equip, self.player.x, self.player.y, True)
+            equip.nonfunc(self.player, f'\n[{equip.name}] se soltó.')
+
+        action_mapping = {
+            '0': lambda: None,
+            '1': lambda: unequip_item(equip),
+            '2': lambda: hud.print_item_stats(equip),
+            '3': lambda: drop_equipped_item(equip)
+        }
+
+        action_mapping[equip_action]()
 
     # the name explains it self
     def move_selection(self):   
@@ -163,13 +185,9 @@ class engine:
             utilities.print_effect(f'\n{move_vector["msg"]}\n')
             self.movement(axis, move, move_vector['move'])
 
-        else: # if the next coor is an enemy combat
+        else: # if the next coor is an enemy
             if sq.state: # if the enemy is alive
-                combat_logic.combat_logic(self.map, self.player, sq)
-                if sq.state:
-                    player_death = combat_logic.combat_logic(self.map, sq, self.player)
-                    if player_death:
-                        self.end_exe = True
+                combat_logic.combat_logic(self.player, sq, self.map, self.player)
 
                 # when the player get exp
                 lvl = int(levels.find_level(self.player.level, self.player.exp))
@@ -200,53 +218,63 @@ class engine:
 
     # the player's movement
     def movement(self, axis, new_coor, move_vector):
-
-        # setting the new coor and actuals coors
+        # Current and new coordinates
+        player_x, player_y = self.player.x, self.player.y
         new_player_coor = new_coor
-        player_coor_x, player_coor_y = self.player.x, self.player.y
 
-        new_coords = (new_player_coor, player_coor_y) if axis == 'x' else (player_coor_x, new_player_coor)
+        # Determine the object at the new location based on the axis
+        if axis == 'x':
+            thing = self.map[new_player_coor][player_y]
+        else:
+            thing = self.map[player_x][new_player_coor]
 
-        # the next map item/object
-        thing = self.map[new_coords[0]][new_coords[1]]
-
-        # if in the way there is an object/item
+        # Handle if the object/item is an instance of basic_item, basic_equip, or basic_enemy
         if isinstance(thing, (basic_item, basic_equip, basic_enemy)):
+            self.handle_item_or_enemy(thing, axis, new_player_coor, player_x, player_y)
 
-            # if the object/item is taken and the inventory is in it's limit
-            if (len(self.player.inventory) < self.player.inv_limit) and not(isinstance(thing, (basic_enemy))):
+        # Handle if the object is a basic_environment_item
+        elif isinstance(thing, basic_environment_item):
+            self.handle_environment_item(thing, axis, new_player_coor, player_x, player_y)
 
-                self.player.inventory.append(thing)
-                utilities.print_effect(f'[{thing.name}] guardado en el inventario.\n')
+        # Move the player and check for floor items
+        if axis == 'x':
+            self.update_player_position(new_player_coor, player_y, move_vector, 'x')
+        else:
+            self.update_player_position(player_x, new_player_coor, move_vector, 'y')
 
-                self.map[new_coords[0]][new_coords[1]] = '.'
+    # helper function to handle item or enemy
+    def handle_item_or_enemy(self, thing, axis, new_player_coor, player_x, player_y):
+        if len(self.player.inventory) < self.player.inv_limit and not isinstance(thing, basic_enemy):
+            # Pick up the item
+            self.player.inventory.append(thing)
+            utilities.print_effect(f'[{thing.name}] guardado en el inventario.\n')
+            self.update_map(axis, new_player_coor, player_x, player_y, '.')
+        else:
+            # Handle inventory full or enemy encounter
+            self.room_inv_save(thing, new_player_coor if axis == 'x' else player_x, player_y if axis == 'x' else new_player_coor, True)
 
-            else: # if not
-                self.room_inv_save(thing, new_coords[0], new_coords[1], True) if axis == 'x' else self.room_inv_save(thing, new_coords[0], new_coords[1], True)
+    # helper function to handle environment items
+    def handle_environment_item(self, thing, axis, new_player_coor, player_x, player_y):
+        if thing.func():  # Perform the environment item action
+            self.dungeon_lvlup = True
+        else:
+            self.room_inv_save(thing, new_player_coor if axis == 'x' else player_x, player_y if axis == 'x' else new_player_coor, True)
 
-        # if the object/item is a environment item
-        elif isinstance(thing, (basic_environment_item)):
-            stairs_use = thing.func()
-            if stairs_use:
-                self.dungeon_lvlup = True
-                self.stairs_used = stairs_use
-            else:
-                self.room_inv_save(thing, new_coords[0], new_coords[1], True) if axis == 'x' else self.room_inv_save(thing, new_coords[0], new_coords[1], True)
+    # helper function to update player position and check for floor items
+    def update_player_position(self, new_x, new_y, move_vector, axis):
+        if axis == 'x':
+            self.player.x = new_x
+            self.floor_item_check(self.player.x, self.player.x - move_vector, self.player.y, self.room_inv['coor_x'], (self.room_inv['coor_x'], self.room_inv['coor_y']))
+        else:
+            self.player.y = new_y
+            self.floor_item_check(self.player.y, self.player.x, self.player.y - move_vector, self.room_inv['coor_y'], (self.room_inv['coor_x'], self.room_inv['coor_y']))
 
-
-        # player's axis move
-        if axis == 'x': # in horizontal axis
-            self.player.x = new_player_coor
-            self.floor_item_check(self.player.x, (self.player.x - move_vector), self.player.y, 
-                                  self.room_inv['coor_x'], (self.room_inv['coor_x'], self.room_inv['coor_y'])
-                                 )
-        else: # in vertical axis
-            self.player.y = new_player_coor
-            self.floor_item_check(self.player.y, self.player.x, 
-                                  (self.player.y - move_vector), self.room_inv['coor_y'], 
-                                  (self.room_inv['coor_x'], self.room_inv['coor_y'])
-                                 )
-        # player's axis move end #
+    # helper function to update the map
+    def update_map(self, axis, new_player_coor, player_x, player_y, new_value):
+        if axis == 'x':
+            self.map[new_player_coor][player_y] = new_value
+        else:
+            self.map[player_x][new_player_coor] = new_value
 
     # to check if where the player is an object/item or just floor
     def floor_item_check(self, used_player_axis, player_x, player_y, room_inv_axis, room_coors):
@@ -258,16 +286,9 @@ class engine:
             self.map[player_x][player_y] = '.'
 
 
-
-    '''                             '' '
-        world's and data's loaders
-    ' ''                             '''
-
-    def load_save_run(self):
-        self.map = (load_saved_game.load_map())
-        self.player = (load_saved_game.load_player()) # player
-        self.dungeon_range = (load_saved_game.load_dungeon_range()) # dungeon range
-        
+    '''                             ' '' 
+        World's and data's loaders
+    '' '                             '''
     # setting world elements
     def load_world(self):
         # map's constructions
@@ -275,28 +296,33 @@ class engine:
         self.map = self.map_class['map']
 
         # player
-        self.player.x = (self.map_class['player_spawn_coords'])[0]
-        self.player.y = (self.map_class['player_spawn_coords'])[1]
-        self.load_entity(self.map_class, self.items.return_items(), 'items') # items print
-        self.load_entity(self.map_class, self.start_enemies.return_enemies(), 'enemys') # enemies print
-        self.load_entity(self.map_class, self.items.return_stairs(), 'stairs') # stairs print
+        self.player = self.start_player.mod_player_coords(
+            (self.map_class['player_spawn_coords'])[0], 
+            (self.map_class['player_spawn_coords'])[1]
+        )
+        
+        # Load items, enemies, and stairs
+        self.load_entity(self.map_class, self.items.return_items(), 'items')   # items print
+        self.load_entity(self.map_class, self.start_enemies.return_enemies(), 'enemys')  # enemies print
+        self.load_entity(self.map_class, self.items.return_stairs(), 'stairs')   # stairs print
 
     # to load entity
     def load_entity(self, map_coors, start_entities, load_entity):
         for i in range(len(map_coors[load_entity + '_spawn_coords'])):
             while True:
-                random_entity = random.choice(start_entities) # A random entity selected
-                entity = random_entity.start() # starting the entity
-
-                # setting coors for each "entity spawn coors" in the map in turn
+                random_entity_class = random.choice(start_entities)  # Random entity class selected
+                
+                # Create entity instance directly using __init__
+                entity = random_entity_class()  # Create an instance of the entity class
+                
+                # setting coordinates for each "entity spawn coordinates" in the map
                 entity.x = map_coors[load_entity + '_spawn_coords'][i][0]
                 entity.y = map_coors[load_entity + '_spawn_coords'][i][1]
 
-                # Check if the entity is an enemy and its range is within dungeon_range
-                if isinstance(entity, basic_enemy) and entity.range <= self.dungeon_range:
+                # Check if the entity is an enemy and its range is within dungeon_floor
+                if (isinstance(entity, basic_enemy) and entity.range <= self.dungeon_floor) or \
+                isinstance(entity, (basic_item, basic_environment_item)):
+                    
                     # entity print
-                    self.map[entity.x][entity.y] = entity
-                    break  # Break the while loop if entity is successfully placed
-                elif isinstance(entity, (basic_item, basic_environment_item)):
                     self.map[entity.x][entity.y] = entity
                     break  # Break the while loop if entity is successfully placed

@@ -1,15 +1,16 @@
 
 from items.basic_item import basic_item
-from utilities import *
+from common_utilities.utilities import *
 
-class potion:
+class potion(basic_item):
 
-    # name, sprite, x, y, func, to_player
-    def start(self, x = 1, y = 1):
+    def __init__(self, x=1, y=1):
         name = 'Poción'
         sprite = '+'
         to_player = True
-        return basic_item('pt-+', name, sprite, x, y, self.use_function, to_player = to_player)
+        desc = "Recupera 10 puntos de salud como máximo"
+        # name, sprite, x, y, rarity, func, desc, to_player
+        super().__init__(name, sprite, x, y, 2, func=self.use_function, desc=desc, to_player=to_player)
 
     def use_function(self, player):
         if player.hp < player.max_hp:
@@ -18,5 +19,5 @@ class potion:
             utilities.print_effect(f'\nSalud recuperada en [{hp_txt}].')
             return True
         else:
-            utilities.print_effect('\nNo se puede usar la poción. Vida del jugador al máximo.')
+            utilities.print_effect('\nTe detienes un segundo y piensas: "Mejor no lo desperdicio. No tengo heridas ahora".')
             return False

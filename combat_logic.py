@@ -1,47 +1,41 @@
 
-import os
+from common_utilities import utilities
 
-from npc.basic_enemy import basic_enemy as basic_enemy
-from utilities import *
-from start_world_elements import player
+def combat_logic(attacker, victim, game_map, player):
 
+    # Calcular el daño en función del ataque y la defensa del oponente
+    damage = max(1, int(attacker.damage / (2 ** (victim.defense / attacker.damage))))
+    victim.hp -= damage
 
-# the name explains it self
-def combat_logic(map, attacker, victim):
+    # Determinar nombres adecuados para el atacante y la víctima
+    attacker_name = 'player' if attacker is player else attacker.name
+    victim_name = 'player' if victim is player else victim.name
 
-    damage = int(attacker.damage / (2 ** (victim.defense / attacker.damage))) # + weapon.critic
-    damage = damage if damage > 1 else 1
-    victim.hp = (victim.hp - damage) if damage < victim.hp else 0
+    # Mostrar el resultado del ataque
+    utilities.print_effect(f'\nEl/La [{attacker_name}] atacó a [{victim_name}]. {damage} de daño.')
 
-    utilities.print_effect(f'\nEl/La [{attacker.name}] atacó a [{victim.name}]. {str(damage)}')
+    # Lógica específica si el atacante es el jugador
+    if attacker is player:
+        for equip in ['sword', 'shield']:
+            item = attacker.equipment.get(equip)
+            if item and item.battle_effect and not victim.alter_status:
+                item.battle_effect(victim)
 
-    if isinstance(attacker, (player)): # if the player is the attacker
-        player_sword = attacker.equipment['sword']
-        if player_sword != None: # if the player have a weapon
-            # if the weapon have an effect and the victim have already an effect
-            if (player_sword).battle_effect != None and (victim.alter_status == None):
-                (player_sword).battle_effect(victim)
-
-        player_shield = attacker.equipment['shield']
-        if player_shield != None: # if the player have a weapon
-            # if the weapon have an effect and the victim have already an effect
-            if (player_shield).battle_effect != None and (victim.alter_status == None):
-                (player_shield).battle_effect(victim)
-
-    if victim.alter_status != None: # if the victim doesn't have an altered effect
-        (victim.alter_status[0])(victim) # the effect
-        victim.alter_status[1] -= 1 # reduction in duration of effect
-        if victim.alter_status[1] <= 0: # when the effect ends
+    # Aplicar efectos de estado alterado si los tiene
+    if victim.alter_status:
+        victim.alter_status[0](victim)  # Aplicar efecto
+        victim.alter_status[1] -= 1       # Reducir la duración del efecto
+        if victim.alter_status[1] <= 0:   # Si el efecto ha terminado
             victim.alter_status = None
 
-    if victim.hp <= 0 and victim.state: # death verification
-        (map[victim.x][victim.y]).state = not(victim.state)
-        (map[victim.x][victim.y]).sprite = '%'
-        utilities.print_effect(f'\n[{victim.name}] murió.\n')
-        if isinstance(victim, (player)): # when the player dies
-            player.state = False
-            utilities.print_effect(f'\n M O R T I S \n')
-            os.remove('data/safe_game/run_data.json') # delete the saved data
-            return True
-        else: # when the enemy dies
-            attacker.exp += victim.exp
+    # Verificar si la víctima ha muerto
+    if victim.hp <= 0:
+        # Cambiar el estado y sprite del mapa para representar la muerte
+        game_map[victim.x][victim.y].state = False
+        game_map[victim.x][victim.y].sprite = '%'
+        
+        if not victim is player:
+            utilities.print_effect(f'\n[{victim_name}] murió.')
+
+        if victim is not player:  # Si el enemigo muere
+            attacker.exp += victim.exp  # El atacante recibe la experiencia del enemigo

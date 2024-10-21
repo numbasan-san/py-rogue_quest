@@ -1,8 +1,8 @@
 
 from npc.basic_enemy import basic_enemy as enemy
 
-class ghoul:
+class ghoul(enemy):
 
-    # name, hp, damage, defense, sprite, x, y, exp, range
-    def start(self, x = 1, y = 1):
-        return enemy('gh-g', 'Ghoul', 100, 5, 10, 'G', x, y, 15, 1)
+    def __init__(self, x=1, y=1):
+        # name, hp, damage, defense, sprite, x, y, exp, range, taxonomy/color
+        super().__init__('Ghoul', 100, 5, 10, 'G', x, y, 15, 2, 2)

@@ -1,78 +1,88 @@
 
 import os
-
-from items.basic_item import basic_item as basic_item
-from items.basic_equip import basic_equip as basic_equip
-from items.basic_environment_item import basic_environment_item as basic_environment_item
+from data.config import config
+from items.basic_item import basic_item
+from items.basic_equip import basic_equip
+from items.basic_environment_item import basic_environment_item
 from npc.basic_enemy import basic_enemy as enemy
-from start_world_elements import player
+from start_world_elements import player as _player_
+from common_utilities import *
+from colorama import init, Fore
 
-from utilities import *
+init(autoreset=True)
 
-def print_hud(__map, __player, level):
-    os.system('cls')
+def print_hud(game_map, player):
     
-    # player print
-    __map[__player.x][__player.y] = __player
-
-    # for x in __map:
-    #     for entite in x:
-    #         if isinstance(entite, enemy):
-    #             __map[entite.x][entite.y] = entite
+    os.system(config.load_config())
+    
+    # map update
+    game_map[player.x][player.y] = player
 
     # map print
-    for line in __map:
-        floor = ''
-        for sq in line:
-            if isinstance(sq, (basic_item, enemy, player, basic_equip, basic_environment_item)):
-                sq = str(sq.sprite)
-            floor += str(sq)
+    for line in game_map:
+        floor = ''.join(
+            f"{sq.color}{sq.sprite}{Fore.RESET}" if isinstance(sq, (enemy, _player_, basic_item, basic_equip, basic_environment_item)) else sq 
+            for sq in line
+        )
         print(floor)
-    # map print end #
 
-    # print player stats
-    print(f'HP: {__player.hp}/{__player.max_hp}. Atk: {__player.damage}/{__player.base_damage}. Def: {__player.defense}/{__player.base_defense}. Lvl(Exp): {__player.level}({__player.exp}). Floor: {level}')
-    # print player stats end #
+    def get_hp_status(player): # to get player's HP %
+        hp_ratio = player.hp / player.max_hp
+        if hp_ratio > 0.74:
+            return Fore.LIGHTGREEN_EX
+        elif 0.5 <= hp_ratio <= 0.74:
+            return Fore.LIGHTYELLOW_EX
+        elif 0.15 <= hp_ratio < 0.5:
+            return Fore.LIGHTRED_EX
+        return Fore.RED
 
-    # inventory's print
-    inventory = ''
-    for i in range(len(__player.inventory)):
-        slot = (__player.inventory[i].sprite + ', ') if i < (len(__player.inventory) - 1) else __player.inventory[i].sprite
-        inventory += slot
-    # inventory's print end #
+    # print player's stats
+    hp_status = get_hp_status(player)
+    print(f'{hp_status}HP: {player.hp}/{player.max_hp}{Fore.RESET}. '
+          f'Atk: {player.damage}/{player.base_damage}. '
+          f'Def: {player.defense}/{player.base_defense}. '
+          f'Lvl(Exp): {player.level}({player.exp}).')
 
-    print(f'Inventario: [{inventory}]')
+    inventory_items = ', '.join(item.sprite for item in player.inventory)
+    print(f'Inventario: [{inventory_items}]')
 
-    sword = 'NO' if __player.equipment["sword"] == None else (__player.equipment["sword"]).name
-    shield = 'NO' if __player.equipment["shield"] == None else (__player.equipment["shield"]).name
+    sword = f'{(player.equipment["sword"]).color}{(player.equipment["sword"]).name}{Fore.RESET}' if player.equipment["sword"] else 'NO'
+    shield = f'{(player.equipment["shield"]).color}{(player.equipment["shield"]).name}{Fore.RESET}' if player.equipment["shield"] else 'NO'
+    
     print(f'Arma: [{sword}]. Escudo: [{shield}].')
 
-def print_full_inventory(__player):
-
+def print_full_inventory(player):
     print('\n-----Inventario-----')
-    if __player.inventory != []:
-        for i in range(len(__player.inventory)):
-            print(f'{i + 1}. {(__player.inventory[i]).name}.')
+    if player.inventory:
+        for i, item in enumerate(player.inventory, start=1):
+            print(f'{i}. {item.name}.')
     else:
-        print('VACÍO')
-    print('-------------------\n')
+        print(Fore.RED + 'VACÍO')
+    print('--------------------\n')
 
-def print_full_equip(__player):
-    
-    sword = 'NO' if __player.equipment["sword"] == None else (__player.equipment["sword"]).name
-    shield = 'NO' if __player.equipment["shield"] == None else (__player.equipment["shield"]).name
+def print_full_equip(player):
+    sword = player.equipment.get("sword", 'NO').name if player.equipment["sword"] else 'NO'
+    shield = player.equipment.get("shield", 'NO').name if player.equipment["shield"] else 'NO'
 
     print('\n-----EQUIPAMENTO-----')
     print(f'1. {sword}')
     print(f'2. {shield}')
-    print('-------------------\n')
+    print('---------------------\n')
 
-def print_equip_stats(equip):
-    text = f'-----ESTADÍSTICAS: {(equip.name).upper()}-----'
-    print(f'\n{text}')
-    attributes = vars(equip)
-    skipped_attributes = ['battle_effect', 'x', 'y', 'func', 'to_player', 'sprite', 'nonfunc']
+def print_item_stats(equip):
+    text = f'{equip.name.upper()}'
+    print(f'\n-----ESTADÍSTICAS: {equip.color}{text}{Fore.RESET}-----')
+
+    # mapping equipment attributes, excluding somes attributes
+    attributes = {
+        k: v for k, v in vars(equip).items() if k not in ['name', 'battle_effect', 'x', 'y', 'func', 'color', 'to_player', 'sprite', 'nonfunc']
+    }
+
+    # attribute's print
     for attr, value in attributes.items():
-        if attr not in skipped_attributes:
+        if attr == "rarity": # if the object have "rarity", print the color
+            print(f'- {attr.capitalize()}: {equip.color}{value}{Fore.RESET}.')
+        else:
             print(f'- {attr.capitalize()}: {value}.')
-    print(('-' * len(text)) + '\n')
+
+    print('-------------------' + ('-' * len(text)) + '-----\n')

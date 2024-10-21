@@ -1,8 +1,8 @@
 
 from npc.basic_enemy import basic_enemy as enemy
 
-class titan:
+class titan(enemy):
 
-    # name, hp, damage, defense, sprite, x, y, exp, range
-    def start(self, x = 1, y = 1):
-        return enemy('tt-t', 'Titan', 100, 70, 10, 'T',  x, y, 1000, 2)
+    def __init__(self, x=1, y=1):
+        # name, hp, damage, defense, sprite, x, y, exp, range, taxonomy/color
+        super().__init__('Titan', 100, 70, 10, 'T', x, y, 1000, 10, 3)

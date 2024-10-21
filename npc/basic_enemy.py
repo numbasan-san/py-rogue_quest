@@ -1,14 +1,16 @@
 
-from items.basic_item import basic_item
+import math, combat_logic
+from common_utilities import color_mappings
+
+from colorama import *
 from items.basic_equip import basic_equip
+from items.basic_item import basic_item
 from items.basic_environment_item import basic_environment_item
-import heapq
 
 class basic_enemy:
 
-    def __init__(self, code, name, hp, damage, defense, sprite, x, y, exp, range, alter_status=None, strategy_ia=None):
+    def __init__(self, name, hp, damage, defense, sprite, x, y, exp, range, color, alter_status=None, move_ia=None, strategy_ia=None):
         self.name = name
-        self.code = code
         self.hp = hp
         self.damage = damage
         self.defense = defense
@@ -17,73 +19,75 @@ class basic_enemy:
         self.y = y
         self.exp = exp
         self.range = range
+        self.color = color_mappings.enemy_color_mapping.get(color, Fore.WHITE)
         self.state = True
         self.alter_status = alter_status
-        self.move_ia = self.move
+        self.move_ia = self.move if move_ia is None else move_ia
         self.strategy_ia = strategy_ia
-        self.current_item = None  # Almacena el objeto actual
-        self.item_original_position = None  # Almacena la posición original del objeto
 
-    def dijkstra(self, map, player_position):
-        distance = {}
-        heap = [(0, player_position)]
-        walls = ['━', '┃', '┏', '┓', '┗', '┛', '┣', '┫', '┳', '┻', '╋', ' ']
-        while heap:
-            d, position = heapq.heappop(heap)
-            if position in distance:
-                continue
-            distance[position] = d
-            x, y = position
-            for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-                nx, ny = x + dx, y + dy
-                if 0 <= nx < len(map) and 0 <= ny < len(map[0]) and map[nx][ny] not in walls:
-                    heapq.heappush(heap, (d + 1, (nx, ny)))
-        return distance
+    def move(self, game_map, player):
+        player_coords = (player.x, player.y)
+        
+        # Coordenadas adyacentes (Derecha, Izquierda, Arriba, Abajo)
+        near_coords = [
+            (self.x + 1, self.y),  # Derecha
+            (self.x - 1, self.y),  # Izquierda
+            (self.x, self.y - 1),  # Arriba
+            (self.x, self.y + 1)   # Abajo
+        ]
 
-    def move(self, map, player):
-        player_position = (player.x, player.y)
-        player_distance = self.dijkstra(map, player_position)
-        walls = ['━', '┃', '┏', '┓', '┗', '┛', '┣', '┫', '┳', '┻', '╋', ' ']
+        # Obtener las coordenadas más cercanas ordenadas al jugador
+        sorted_coords = self.nearest_coordinates(near_coords, player_coords, game_map)
 
-        x, y = self.x, self.y
-        if (x, y) != player_position:
-            possible_moves = []
+        if not sorted_coords:
+            return  # No hay movimiento posible
 
-            # Verificar movimientos posibles en las cuatro direcciones
-            for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-                nx, ny = x + dx, y + dy
-                if 0 <= nx < len(map) and 0 <= ny < len(map[0]) and map[nx][ny] not in walls:
-                    if isinstance(map[nx][ny], basic_enemy) and map[nx][ny] is not self and map[nx][ny].state:
-                        pass
+        # Verificar si la coordenada más cercana está ocupada por un enemigo
+        next_coords = sorted_coords[0]  # Coordenada más cercana
+        second_coords = sorted_coords[1] if len(sorted_coords) > 1 else None  # Segunda coordenada más cercana
+
+        target = game_map[next_coords[0]][next_coords[1]]  # El objeto en la siguiente coordenada
+
+        def update_move(new_coords, sq):
+            game_map[self.x][self.y] = sq  # Liberar la posición actual
+            self.x, self.y = new_coords  # Actualizar las coordenadas del enemigo
+            game_map[new_coords[0]][new_coords[1]] = self  # Mover al enemigo a la nueva posición
+
+        if next_coords == player_coords:
+            if isinstance(target, type(player)):  # Verificar si es el jugador
+                # print(f'El enemigo atacó al jugador en las coordenadas: {player_coords}')
+                combat_logic.combat_logic(self, player, game_map, player)
+
+        elif not isinstance(target, type(self)):
+            # Si la coordenada más cercana no tiene un enemigo
+            if isinstance(target, (basic_item, basic_equip, basic_environment_item)):
+                # Si hay un objeto en la siguiente coordenada, intercambiar
+                update_move(next_coords, target)
+            else:
+                # Si no hay objeto, mover al enemigo a la nueva posición
+                update_move(next_coords, '.')
+        elif isinstance(target, type(self)):
+            # Si la coordenada más cercana está ocupada por otro enemigo, moverse a la segunda más cercana
+            if second_coords:
+                second_target = game_map[second_coords[0]][second_coords[1]]
+                if not isinstance(second_target, type(self)):  # Si no hay otro enemigo en la segunda coordenada
+                    if isinstance(second_target, (basic_item, basic_equip, basic_environment_item)):
+                        # Si hay un objeto en la segunda coordenada, intercambiar
+                        update_move(second_coords, second_target)
                     else:
-                        distance = player_distance.get((nx, ny), float('inf'))
-                        possible_moves.append(((nx, ny), distance))
-            
-            if possible_moves:
-                possible_moves.sort(key=lambda pos: pos[1])
-                next_move, _ = possible_moves[0]
+                        # Si no hay objeto, moverse a la segunda coordenada más cercana
+                        update_move(second_coords, '.')                    
 
-                # Devolver el objeto guardado a la posición original si existe
-                if self.current_item:
-                    original_x, original_y = self.item_original_position
-                    map[original_x][original_y] = self.current_item
-                    self.current_item = None
-                    self.item_original_position = None
+    def nearest_coordinates(self, coords, player, game_map):
+        walls = ['━', '┃', '┏', '┓', '┗', '┛', '┣', '┫', '┳', '┻', '╋', ' ']  # Conjunto en lugar de lista para búsquedas más rápidas
 
-                # Guardar el objeto en la nueva posición si es de tipo básico
-                if isinstance(map[next_move[0]][next_move[1]], (basic_item, basic_equip, basic_environment_item)):
-                    self.current_item = map[next_move[0]][next_move[1]]
-                    self.item_original_position = (next_move[0], next_move[1])
+        # Filtramos las coordenadas válidas, descartando aquellas que contengan paredes
+        valid_coords = [coord for coord in coords if (game_map[coord[0]][coord[1]] not in walls)]
 
-                # Actualizar la posición del enemigo
-                if next_move == player_position:
-                    print(f"{self.name} ha alcanzado al jugador!")
-                else:
-                    if self.current_item:
-                        map[x][y] = self.current_item  # Restaurar el objeto en la posición anterior del enemigo
-                    else:
-                        map[x][y] = '.'  # Dejar una posición vacía si no había objeto
-                    self.current_item = None  # Limpiar el objeto actual del enemigo
+        # Si no hay coordenadas válidas, devolvemos None
+        if not valid_coords:
+            return None
 
-                    map[next_move[0]][next_move[1]] = self
-                    self.x, self.y = next_move
+        # Devuelve la coordenada más cercana al jugador
+        sorted_coords = sorted(valid_coords, key=lambda coord: math.dist(coord, player))
+        return sorted_coords

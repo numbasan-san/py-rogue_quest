@@ -8,4 +8,4 @@
 #         files_names.append(i.replace('.py', ''))
 # print(files_names)
 
-__all__ =  ['stairs']
+__all__ =  ['color_mappings', 'utilities']
