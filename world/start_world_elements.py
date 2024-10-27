@@ -1,18 +1,17 @@
 
-from player import *
-
+from world.player import *
+from npc.enemies import *
 from items.consumables import *
 from items.equipment import *
 from items.environment import *
+
 from colorama import *
 
-from npc.enemies import *
-
-class start_player:
+class StartPlayer:
 
     def __init__(self):
         # hp, damage, defense, sprite, x, y, color
-        self.player = player(20, 100, 0, '@', Fore.LIGHTRED_EX)
+        self.player = Player(200, 100, 0, '@', Fore.LIGHTRED_EX)
     
     def get_player(self):
         return self.player
@@ -22,29 +21,29 @@ class start_player:
         self.player.y = y
         return self.player
     
-class start_enemies:
+class StartEnemies:
 
     def return_enemies(self):
         return [
-            kelpie.kelpie,
-            banshee.banshee,
-            ghoul.ghoul,
-            titan.titan,
+            kelpie.Kelpie,
+            banshee.Banshee,
+            ghoul.Ghoul,
+            titan.Titan,
         ]
 
-class start_items:
+class StartItems:
 
     def return_items(self):
         return [
-            potion.potion,
-            potion_power.potion_power,
-            sword.sword,
-            fire_sword.fire_sword,
-            shield.shield,
-            shield_medusa.shield_medusa,
+            potion.Potion,
+            potion_power.PotionPower,
+            sword.Sword,
+            fire_sword.FireSword,
+            shield.Shield,
+            shield_medusa.ShieldMedusa,
         ]
 
     def return_stairs(self):
         return [
-            stairs.stairs,
+            stairs.Stairs,
         ]

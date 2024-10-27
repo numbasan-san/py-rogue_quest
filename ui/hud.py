@@ -1,11 +1,13 @@
 
-import os
-from data.config import config
-from items.basic_item import basic_item
-from items.basic_equip import basic_equip
-from items.basic_environment_item import basic_environment_item
-from npc.basic_enemy import basic_enemy as enemy
-from start_world_elements import player as _player_
+import shutil
+import os, sys, time
+
+from config import setting
+from items.basic_equip import BasicEquip
+from items.basic_item import BasicItem
+from items.basic_environment_item import BasicEnvironmentItem
+from npc.basic_enemy import BasicEnemy
+from world.start_world_elements import Player
 from common_utilities import *
 from colorama import init, Fore
 
@@ -13,17 +15,19 @@ init(autoreset=True)
 
 def print_hud(game_map, player):
     
-    os.system(config.load_config())
+    os.system(setting.get_clear_cmd())
     
     # map update
     game_map[player.x][player.y] = player
 
     # map print
     for line in game_map:
-        floor = ''.join(
-            f"{sq.color}{sq.sprite}{Fore.RESET}" if isinstance(sq, (enemy, _player_, basic_item, basic_equip, basic_environment_item)) else sq 
-            for sq in line
-        )
+        floor = '' 
+        for sq in line:
+            print
+            if isinstance(sq, (BasicEnemy, Player, BasicEquip, BasicItem, BasicEnvironmentItem)):
+                sq = f"{sq.color}{sq.sprite}{Fore.RESET}"
+            floor += str(sq)
         print(floor)
 
     def get_hp_status(player): # to get player's HP %
@@ -64,10 +68,10 @@ def print_full_equip(player):
     sword = player.equipment.get("sword", 'NO').name if player.equipment["sword"] else 'NO'
     shield = player.equipment.get("shield", 'NO').name if player.equipment["shield"] else 'NO'
 
-    print('\n-----EQUIPAMENTO-----')
-    print(f'1. {sword}')
-    print(f'2. {shield}')
-    print('---------------------\n')
+    print('\n-----EQUIPAMENTO-----\n'
+          f'1. {sword}\n'
+          f'2. {shield}\n'
+          '---------------------\n')
 
 def print_item_stats(equip):
     text = f'{equip.name.upper()}'
@@ -86,3 +90,26 @@ def print_item_stats(equip):
             print(f'- {attr.capitalize()}: {value}.')
 
     print('-------------------' + ('-' * len(text)) + '-----\n')
+
+def print_title_style(s):
+
+    def center_string(string):
+        columns, rows = shutil.get_terminal_size()  # Obtener el tamaño de la terminal
+        centered_string = "\n" * ((rows // 2) - (string.count('\n') // 2))  # Centra verticalmente
+        for line in string.splitlines():
+            centered_string += line.center(columns) + "\n"  # Centra horizontalmente
+        return centered_string
+
+    simbols = ['_','(',')','~','|']
+    for i, c in enumerate(center_string(s)):
+        color = Fore.LIGHTYELLOW_EX if c == '~' else Fore.LIGHTBLACK_EX if c in simbols else Fore.WHITE
+        c = '█' if c == '*' else c
+        sys.stdout.write(color + c + Fore.RESET)
+        sys.stdout.flush()
+        time.sleep(0.001)
+
+def print_effect(s, color = Fore.RESET):
+    for c in s:
+        sys.stdout.write(color + c)
+        sys.stdout.flush()
+        time.sleep(0.05)

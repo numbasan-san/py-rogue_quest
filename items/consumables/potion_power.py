@@ -1,8 +1,8 @@
 
-from items.basic_item import basic_item
-from common_utilities.utilities import *
+from items.basic_item import BasicItem
+from ui import hud
 
-class potion_power(basic_item):
+class PotionPower(BasicItem):
 
     def __init__(self, x=1, y=1):
         name = 'Poción de Poder'
@@ -15,5 +15,5 @@ class potion_power(basic_item):
     def use_function(self, player):
         player.damage += 10
         player.base_damage += 10
-        utilities.print_effect('\nAtaque del jugador aumentado.\n')
+        hud.print_effect('\nAtaque del jugador aumentado.\n')
         return True

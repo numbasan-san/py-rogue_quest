@@ -1,5 +1,5 @@
 
-class player:
+class Player:
 
     def __init__(self, hp, damage, defense, sprite, color, x = 1, y = 1, alter_status = None):
         self.max_hp = 50

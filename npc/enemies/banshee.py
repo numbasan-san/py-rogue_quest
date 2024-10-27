@@ -1,38 +1,37 @@
+from npc.basic_enemy import BasicEnemy as Enemy
 
-from npc.basic_enemy import basic_enemy as enemy
-
-class banshee(enemy):
+class Banshee(Enemy):
 
     def __init__(self, x=1, y=1):
-        # name, hp, damage, defense, sprite, x, y, exp, range, taxonomy/color
         super().__init__('Banshee', 100, 5, 10, 'B', x, y, 20, 1, 2, strategy_ia=self.strategy_ia)
+        self.hability_cooldown = 0
 
     def strategy_ia(self, game_map):
         x, y = self.x, self.y
 
-        # Posibles posiciones alrededor de la Banshee (arriba, abajo, izquierda, derecha)
         directions = [
             (x, y - 1), # up
             (x, y + 1), # down
             (x - 1, y), # left
             (x + 1, y), # right
+            (x + 1, y + 1), # down right
+            (x + 1, y - 1), # up right
+            (x - 1, y + 1), # down left
+            (x - 1, y - 1), # up left
         ]
 
-        # Verificar si hay un aliado (otro enemigo) en las casillas alrededor
-        i = 0
+        # banshee checks if she can apply skill
         for (nx, ny) in directions:
-            # Asegurarse de que las coordenadas estén dentro del mapa
             if 0 <= nx < len(game_map) and 0 <= ny < len(game_map[0]):
                 cell = game_map[nx][ny]
-                if isinstance(cell, enemy) and cell is not self:
-                    if cell.state:
-                        i += 1
-                        print(f"Banshee detecta un aliado ({cell.name}) en la dirección ({nx}, {ny}).")
-        
-        # Si no detecta a ningún aliado
-        if i > 0:
-            print(f"Banshee detecta {i} aliados.")
-            return True  # Hay aliados cerca
-        else:
-            print("Banshee no detecta aliados cercanos.")
-            return False  # No hay aliados cercanos
+                if isinstance(cell, Enemy) and cell is not self:
+                    if cell.state and self.hability_cooldown >= 5:
+                        # print(f"\nBanshee ({self.x}, {self.y}) detecta un aliado ({cell.name}) en la dirección ({nx}, {ny}).")
+                        self.damage_buff(cell)
+                        self.hability_cooldown = 0
+
+        self.hability_cooldown += 1
+
+    def damage_buff(self, ally):
+        print(f"\nBanshee aumenta en 2 puntos el ataque a {ally.name}.")
+        ally.damage += 2  # damage buff

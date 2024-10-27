@@ -1,7 +1,7 @@
 
 from colorama import *
 
-class basic_environment_item:
+class BasicEnvironmentItem:
 
     def __init__(self, name, sprite, x, y, func = None):
         self.name = name

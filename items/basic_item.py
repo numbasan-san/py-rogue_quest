@@ -2,7 +2,7 @@
 from colorama import *
 from common_utilities import color_mappings
 
-class basic_item:
+class BasicItem:
 
     def __init__(self, name, sprite, x, y, rarity, func = None, desc = '', to_player = False):
         self.name = name

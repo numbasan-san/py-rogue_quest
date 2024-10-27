@@ -1,8 +1,8 @@
 
-from items.basic_equip import basic_equip
-from common_utilities.utilities import *
+from items.basic_equip import BasicEquip
+from ui import hud
 
-class shield(basic_equip):
+class Shield(BasicEquip):
 
     def __init__(self, x=1, y=1):
         name = 'Escudo'
@@ -17,12 +17,12 @@ class shield(basic_equip):
     def use_function(self, player):
         if player.equipment['shield'] is None or player.equipment['shield'].name != self.name:
             player.equipment['shield'] = self
-            utilities.print_effect(f'\n[{self.name}] equipado.')
+            hud.print_effect(f'\n[{self.name}] equipado.')
             player.defense = self.defense + player.base_defense
         else:
-            utilities.print_effect(f'[{self.name}] ya equipado.')
+            hud.print_effect(f'[{self.name}] ya equipado.')
 
     def nonuse_function(self, player, msg):
-        utilities.print_effect(msg)
+        hud.print_effect(msg)
         player.defense -= player.equipment['shield'].defense
         player.equipment['shield'] = None
