@@ -120,7 +120,7 @@ def print_title_style(s):
         c = '█' if c == '*' else c
         sys.stdout.write(color + c + Fore.RESET)
         sys.stdout.flush()
-        time.sleep(0.00001)
+        time.sleep(0.001)
 
 def print_effect(s, color = Fore.RESET):
     for c in s:
