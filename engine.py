@@ -16,7 +16,7 @@ from npc.basic_enemy import BasicEnemy
 from getpass import getpass
 from world.start_world_elements import StartPlayer, StartEnemies, StartItems
 
-class engine:
+class Engine:
 
     def __init__(self):
         self.room_inv = {
@@ -31,7 +31,7 @@ class engine:
         self.items = StartItems() # to return the items
         self.map = None
         self.player = None
-        self.dungeon_floor = 0
+        self.dungeon_floor = 30
         self.dungeon_lvlup = True
         self.to_next_turn = 1
 
@@ -64,7 +64,7 @@ class engine:
                                 enemy.strategy_ia(self.map)
                             enemy.move_ia(enemy, self.map, self.player)
 
-            if not self.player.state: # if the player is dead
+            if self.player.hp <= 0: # if the player is dead
                 hud.print_effect(f'\n[player] murió.')
                 hud.print_effect(f'\n\n\n-+-+-+-+- M O R T I S -+-+-+-+-\n', color=Fore.RED)
                 self.end_exe = True
@@ -76,9 +76,7 @@ class engine:
             self.to_next_turn += 1
         elif action == '2':  # move
             self.move_selection()
-            self.to_next_turn = 1
             return True
-
         elif action == '3':  # look equipment
             self.handle_equipment()
             self.to_next_turn += 1
@@ -113,7 +111,7 @@ class engine:
         }
 
         text = "0. Nada.\n1. Usar.\n2. Soltar.\n3. Inspeccionar."
-        inv_action = utilities.opciones(f'\nElija qué hacer con [{item.name}]:\n{text}\nElección', ['0', '1', '2', '3'])
+        inv_action = utilities.opciones(f'\nElija qué hacer con [{item.color}{item.name}{Fore.RESET}]:\n{text}\nElección', ['0', '1', '2', '3'])
         action_options[inv_action]()
 
     def handle_equipment(self):
@@ -133,7 +131,7 @@ class engine:
 
     def manage_equipment(self, equip):
         text = "0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar."
-        equip_action = utilities.opciones(f'\nElija qué hacer con [{equip.name}]:\n{text}\nElección', ['0', '1', '2', '3'])
+        equip_action = utilities.opciones(f'\nElija qué hacer con [{equip.color}{equip.name}{Fore.RESET}]:\n{text}\nElección', ['0', '1', '2', '3'])
         
         def unequip_item(equip):
             equip.nonfunc(self.player, f'\n[{equip.name}] se desequipó.')
@@ -188,17 +186,11 @@ class engine:
             self.movement(axis, move, move_vector['move'])
 
         else: # if the next coor is an enemy
-            if sq.state: # if the enemy is alive
-                combat_logic.combat_logic(self.player, sq, self.map, self.player)
+            combat_logic.combat_logic(self.player, sq, self.map, self.player)
 
-                new_level = levels.find_level(self.player.level, self.player.exp)
-                if new_level > self.player.level:
-                    self.level_up_player(new_level)
-
-            '''else: # if the enemy is dead
-                hud.print_effect(f'\nEs el cuerpo inerte de un/una [{sq.name}].')
-                hud.print_effect(f'\n{move_vector["msg"]}\n')
-                self.movement(axis, move, move_vector['move'])'''
+            new_level = levels.find_level(self.player.level, self.player.exp)
+            if new_level > self.player.level:
+                self.level_up_player(new_level)
 
     def level_up_player(self, new_level): # when the player get exp
         hud.print_effect(f'\nEl jugador subió de nivel [{self.player.level}] a [{new_level}].\n')
@@ -330,3 +322,31 @@ class engine:
                     # entity print
                     self.map[entity.x][entity.y] = entity
                     break  # Break the while loop if entity is successfully placed
+
+''' # Es la versión con la generación de mapas procedurales.
+    # setting world elements
+    def load_world(self):
+
+        # player
+        self.player = self.start_player.mod_player_coords(0, 0)
+        
+        map = json_handler.load_procedural_map(self.player)
+        self.map = map
+        
+        print(self.map.rooms)
+        items = []
+        enemies = []
+        environment = []
+        for room in self.map.rooms:
+            self.map.place_entities(room, items, 3, self.items.return_items(), self.dungeon_floor)
+            self.map.place_entities(room, enemies, 3, self.start_enemies.return_enemies(), self.dungeon_floor)
+            self.map.place_entities(room, environment, 1, self.items.return_stairs(), self.dungeon_floor)
+            
+        for y in range(self.map.h):
+            for x in range(self.map.w):
+                for ent_list in [items, enemies, environment]:
+                    for ent in ent_list:
+                        if (ent.x == x and ent.y == y):
+                            self.map.map[ent.x][ent.y] = ent  # Representa un ítem
+        self.map = map.map
+'''

@@ -25,7 +25,5 @@ class Player:
 
         self.exp = 0
         self.level = 1
-        
-        self.state = True
 
         self.color = color

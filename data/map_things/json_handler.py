@@ -2,6 +2,9 @@
 import json, random
 # import maps_handler as maps_handler
 import data.map_things.maps_handler as maps_handler
+import data.map_things.map_classes.map_gene as map_gene
+
+from world.player import *
 
 FILE_PATH = 'data/map_things/maps_data.json'
 # FILE_PATH = 'maps_data.json'
@@ -44,6 +47,16 @@ def load_random_map():
     MAP = random.choice(json.load(open(FILE_PATH, 'r')))
     # return json.load(open(FILE_PATH, 'r'))[0]
     return MAP
+
+def load_procedural_map(player):
+    map_width = 25
+    map_height = 50
+    max_rooms = 5
+    room_min_size = 5
+    room_max_size = 15
+    game_map = map_gene.MapGene(map_width, map_height)
+    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
+    return game_map
 
 # with open('maps_data.json', 'r') as file:
 #     data = json.load(open(FILE_PATH, 'r'))[0]

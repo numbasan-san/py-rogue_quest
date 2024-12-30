@@ -11,7 +11,7 @@ class StartPlayer:
 
     def __init__(self):
         # hp, damage, defense, sprite, x, y, color
-        self.player = Player(200, 100, 0, '@', Fore.LIGHTRED_EX)
+        self.player = Player(10, 100, 0, '@', Fore.LIGHTRED_EX)
     
     def get_player(self):
         return self.player
@@ -20,15 +20,24 @@ class StartPlayer:
         self.player.x = x
         self.player.y = y
         return self.player
-    
+
 class StartEnemies:
 
     def return_enemies(self):
         return [
-            kelpie.Kelpie,
+            aracne.Aracne,
             banshee.Banshee,
+            cerberos.Cerberos,
+            dragon.Dragon,
+            fenrir.Fenrir,
             ghoul.Ghoul,
+            jupia.Jupia,
+            kelpie.Kelpie,
+            lugaru.Lugaru,
+            mokele_mbembe.Mokele_mbembe,
+            nefelin.Nefelin,
             titan.Titan,
+            yinn.Yinn,
         ]
 
 class StartItems:

@@ -4,7 +4,13 @@ from colorama import Fore
 enemy_color_mapping = {
     1: Fore.GREEN, # beast
     2: Fore.LIGHTBLACK_EX, # undead
-    3: Fore.YELLOW, # animated
+    3: Fore.YELLOW, # alchemical
+}
+
+enemy_taxonomy_mapping = {
+    1: 'beast',
+    2: 'undead',
+    3: 'alchemical'
 }
 
 rarity_color_mapping = {

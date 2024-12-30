@@ -1,7 +1,7 @@
 
-import shutil
-import os, sys, time
+import shutil, os, sys, time
 
+from getpass import getpass
 from config import setting
 from items.basic_equip import BasicEquip
 from items.basic_item import BasicItem
@@ -19,12 +19,9 @@ def print_hud(game_map, player):
     
     # map update
     game_map[player.x][player.y] = player
-
-    # map print
     for line in game_map:
         floor = '' 
         for sq in line:
-            print
             if isinstance(sq, (BasicEnemy, Player, BasicEquip, BasicItem, BasicEnvironmentItem)):
                 sq = f"{sq.color}{sq.sprite}{Fore.RESET}"
             floor += str(sq)
@@ -91,6 +88,23 @@ def print_item_stats(equip):
 
     print('-------------------' + ('-' * len(text)) + '-----\n')
 
+def print_bestiary(bestiary):
+    print(f'--------------------BESTIARIO----------------------')
+    if len(bestiary) >= 1:
+        for beast in bestiary:
+            print(f'---------{beast["color"]}{beast["name"]}{Fore.RESET}-----------\n'
+                f'- description: {beast["description"]}\n'
+                f'- hp: {beast["hp"]}.\n'
+                f'- damage: {beast["damage"]}.\n'
+                f'- defense: {beast["defense"]}.\n'
+                f'- exp: {beast["exp"]}.\n'
+                f'- range: {beast["range"]}\n'
+                f'- sprite: {beast["color"]}{beast["sprite"]}{Fore.RESET}.\n'
+                f'- taxonomy: {beast["color"]}{beast["taxonomy"]}{Fore.RESET}.\n'
+            )
+    else: print(Fore.LIGHTYELLOW_EX + 'No hay registros.')
+    getpass('')
+
 def print_title_style(s):
 
     def center_string(string):
@@ -106,7 +120,7 @@ def print_title_style(s):
         c = '█' if c == '*' else c
         sys.stdout.write(color + c + Fore.RESET)
         sys.stdout.flush()
-        time.sleep(0.001)
+        time.sleep(0.00001)
 
 def print_effect(s, color = Fore.RESET):
     for c in s:

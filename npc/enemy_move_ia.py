@@ -13,73 +13,68 @@ def move(enemy, game_map, player):
     player_coords = (player.x, player.y)
     enemy_coords = (enemy.x, enemy.y)
 
-    # Verificar si el jugador está a 3 casillas o menos de distancia
-    if calculate_distance(player_coords, enemy_coords) > 30:
+    # check if the player is 3 squares or less away
+    if calculate_distance(player_coords, enemy_coords) >= 4:
         return
 
     from npc.basic_enemy import BasicEnemy
     player_coords = (player.x, player.y)
 
-    # Coordenadas adyacentes (Derecha, Izquierda, Arriba, Abajo)
     near_coords = [
-        (enemy.x + 1, enemy.y),  # Derecha
-        (enemy.x - 1, enemy.y),  # Izquierda
-        (enemy.x, enemy.y - 1),  # Arriba
-        (enemy.x, enemy.y + 1)   # Abajo
+        (enemy.x + 1, enemy.y),  # right
+        (enemy.x - 1, enemy.y),  # left
+        (enemy.x, enemy.y - 1),  # up
+        (enemy.x, enemy.y + 1)   # down
     ]
 
-    # Obtener las coordenadas más cercanas ordenadas al jugador
+    # get the nearest coordinates ordered to the player
     sorted_coords = nearest_coordinates(near_coords, player_coords, game_map)
 
     if not sorted_coords:
-        return  # No hay movimiento posible
+        return  # no movement possible
 
-    # Verificar si la coordenada más cercana está ocupada por un enemigo
-    next_coords = sorted_coords[0]  # Coordenada más cercana
-    second_coords = sorted_coords[1] if len(sorted_coords) > 1 else None  # Segunda coordenada más cercana
+    next_coords = sorted_coords[0] # nearest coordinate
+    second_coords = sorted_coords[1] if len(sorted_coords) > 1 else None # second nearest coordinate
 
     target = game_map[next_coords[0]][next_coords[1]]  # El objeto en la siguiente coordenada
 
+    # update the map
     def update_move(new_coords, sq):
-        game_map[enemy.x][enemy.y] = sq  # Liberar la posición actual
-        enemy.x, enemy.y = new_coords  # Actualizar las coordenadas del enemigo
-        game_map[new_coords[0]][new_coords[1]] = enemy  # Mover al enemigo a la nueva posición
+        game_map[enemy.x][enemy.y] = sq
+        enemy.x, enemy.y = new_coords
+        game_map[new_coords[0]][new_coords[1]] = enemy
 
-    if next_coords == player_coords:
-        if isinstance(target, type(player)):  # Verificar si es el jugador
+    if next_coords == player_coords: # check if it is the player
+        if isinstance(target, type(player)):
             # print(f'El enemigo atacó al jugador en las coordenadas: {player_coords}')
             combat_logic.combat_logic(enemy, player, game_map, player)
 
-    elif not isinstance(target, BasicEnemy):
-        # Si la coordenada más cercana no tiene un enemigo
+    elif not isinstance(target, BasicEnemy): # if the nearest coordinate does not have an enemy
         if isinstance(target, (BasicItem, BasicEquip, BasicEnvironmentItem)):
-            # Si hay un objeto en la siguiente coordenada, intercambiar
             update_move(next_coords, target)
-        else:
-            # Si no hay objeto, mover al enemigo a la nueva posición
+        else: # if there is no object
             update_move(next_coords, '.')
+
+    # if the nearest coordinate is occupied by another enemy, move to the second closest
     elif isinstance(target, BasicEnemy):
-        # Si la coordenada más cercana está ocupada por otro enemigo, moverse a la segunda más cercana
         if second_coords:
             second_target = game_map[second_coords[0]][second_coords[1]]
-            if not(isinstance(second_target, BasicEnemy)):  # Si no hay otro enemigo en la segunda coordenada
+            if not(isinstance(second_target, BasicEnemy)):
                 if isinstance(second_target, (BasicItem, BasicEquip, BasicEnvironmentItem)):
-                    # Si hay un objeto en la segunda coordenada, intercambiar
                     update_move(second_coords, second_target)
                 else:
-                    # Si no hay objeto, moverse a la segunda coordenada más cercana
                     update_move(second_coords, '.')                    
 
 def nearest_coordinates(coords, player, game_map):
-    walls = ['━', '┃', '┏', '┓', '┗', '┛', '┣', '┫', '┳', '┻', '╋', ' ']  # Conjunto en lugar de lista para búsquedas más rápidas
+    walls = ['━', '┃', '┏', '┓', '┗', '┛', '┣', '┫', '┳', '┻', '╋', ' ', '#']
 
-    # Filtramos las coordenadas válidas, descartando aquellas que contengan paredes
+    # coordinate filtering
     valid_coords = [coord for coord in coords if (game_map[coord[0]][coord[1]] not in walls)]
 
-    # Si no hay coordenadas válidas, devolvemos None
+    # no valid coords? return None
     if not valid_coords:
         return None
 
-    # Devuelve la coordenada más cercana al jugador
+    # returns the closest coordinate to the player
     sorted_coords = sorted(valid_coords, key=lambda coord: math.dist(coord, player))
     return sorted_coords
