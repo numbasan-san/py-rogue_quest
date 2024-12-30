@@ -25,7 +25,7 @@ class Engine:
             'coor_y': 0,
             'in_use': False
         }
-        self.end_exe = False
+        self.game_over = False
         self.start_player = StartPlayer() # to return the player
         self.start_enemies = StartEnemies() # to return the enemies
         self.items = StartItems() # to return the items
@@ -67,7 +67,7 @@ class Engine:
             if self.player.hp <= 0: # if the player is dead
                 hud.print_effect(f'\n[player] murió.')
                 hud.print_effect(f'\n\n\n-+-+-+-+- M O R T I S -+-+-+-+-\n', color=Fore.RED)
-                self.end_exe = True
+                self.game_over = True
             getpass('')
 
     def menu_actions(self, action):
