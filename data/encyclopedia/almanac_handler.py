@@ -6,7 +6,7 @@ PATH = 'data/encyclopedia/'
 
 def write_almanac(item):
     almanac_data = get_almanac()
-    if not (any(item.name == beast["name"] for beast in almanac_data)):
+    if not (any(item.name == item["name"] for item in almanac_data)):
 
         # mapping equipment attributes, excluding somes attributes
         item_data = {
