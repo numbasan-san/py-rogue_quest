@@ -11,7 +11,7 @@ class StartPlayer:
 
     def __init__(self):
         # hp, damage, defense, sprite, x, y, color
-        self.player = Player(1, 100, 0, '@', Fore.LIGHTRED_EX)
+        self.player = Player(10, 100, 0, '@', Fore.LIGHTRED_EX)
     
     def get_player(self):
         return self.player

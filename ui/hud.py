@@ -56,7 +56,7 @@ def print_full_inventory(player):
     print('\n-----Inventario-----')
     if player.inventory:
         for i, item in enumerate(player.inventory, start=1):
-            print(f'{i}. {item.name}.')
+            print(f'{i}. {item.color}{item.name}{Fore.RESET}.')
     else:
         print(Fore.RED + 'VACÍO')
     print('--------------------\n')
@@ -88,19 +88,39 @@ def print_item_stats(equip):
 
     print('-------------------' + ('-' * len(text)) + '-----\n')
 
+def print_almanac(almanac):
+    print(f'\n---------------------ALMANAQUE---------------------')
+    if len(almanac) >= 1:
+        for item in almanac:
+            print(f'---------{item["color"]}{item["name"]}{Fore.RESET}-----------\n'
+                f'- description: {item["desc"]}.\n'
+                f'- sprite: {item["color"]}{item["sprite"]}{Fore.RESET}.\n'
+                f'- rarity: {item["color"]}{item["rarity"]}{Fore.RESET}.'
+            )
+            try:
+                print(
+                f'- damage: {item["damage"]}.\n'
+                f'- defense: {item["defense"]}.\n'
+                f'- critic: {item["critic"]}.\n')
+            except:
+                pass
+    else:
+        print(Fore.LIGHTYELLOW_EX + 'No hay registros.')
+    getpass('')
+
 def print_bestiary(bestiary):
-    print(f'--------------------BESTIARIO----------------------')
+    print(f'\n---------------------BESTIARIO---------------------')
     if len(bestiary) >= 1:
         for beast in bestiary:
             print(f'---------{beast["color"]}{beast["name"]}{Fore.RESET}-----------\n'
                 f'- description: {beast["description"]}\n'
+                f'- sprite: {beast["color"]}{beast["sprite"]}{Fore.RESET}.\n'
+                f'- taxonomy: {beast["color"]}{beast["taxonomy"]}{Fore.RESET}.\n'
+                f'- exp: {beast["exp"]}.\n'
+                f'- range: {beast["range"]}\n'
                 f'- hp: {beast["hp"]}.\n'
                 f'- damage: {beast["damage"]}.\n'
                 f'- defense: {beast["defense"]}.\n'
-                f'- exp: {beast["exp"]}.\n'
-                f'- range: {beast["range"]}\n'
-                f'- sprite: {beast["color"]}{beast["sprite"]}{Fore.RESET}.\n'
-                f'- taxonomy: {beast["color"]}{beast["taxonomy"]}{Fore.RESET}.\n'
             )
     else: print(Fore.LIGHTYELLOW_EX + 'No hay registros.')
     getpass('')

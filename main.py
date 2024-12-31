@@ -4,24 +4,25 @@ import os, time
 import config.setting as setting
 from engine import Engine
 from data.encyclopedia import bestiary_handler
+from data.encyclopedia import almanac_handler
 from ui import hud
 from ui.titles.titles import get_big_title, get_little_title
 from common_utilities.utilities import utilities
 
 def new_game():
     eng = Engine()
-    while not eng.game_over:
+    while not eng.end_exe:
         eng.run()
 
 def resume_game():
     pass
 
 def encyclopedia():
-    menu_text = '\n[1] # Almanaque #\n[2] Bestiario\n[0] Salir'
+    menu_text = '\n[1] Almanaque\n[2] Bestiario\n[0] Salir'
     hud.print_title_style(get_little_title() + menu_text)
     action = utilities.opciones('\nElija una opción', ['1', '2', '0'])
     action_mapping = {
-        # '1': almanac, 
+        '1': almanac, 
         '2': bestiary, 
         '0': lambda: None, 
     }
@@ -31,6 +32,11 @@ def bestiary():
     os.system(setting.get_clear_cmd())
     bestiary = bestiary_handler.get_bestiary()
     hud.print_bestiary(bestiary)
+    
+def almanac():
+    os.system(setting.get_clear_cmd())
+    almanac = almanac_handler.get_almanac()
+    hud.print_almanac(almanac)
 
 def main():
     os.system(setting.get_clear_cmd())
@@ -50,7 +56,7 @@ def main():
 
 
 if __name__ == '__main__':
-    if True:
+    if False:
         os.system(setting.get_clear_cmd())
         hud.print_title_style(f"{get_big_title()}Developed by numbasan-san")
         time.sleep(2)

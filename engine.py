@@ -4,6 +4,7 @@ import ui.hud as hud
 import game_logic.input_handler as input_handler
 import data.map_things.json_handler as json_handler
 import game_logic.level_things.player_levels as levels
+import data.encyclopedia.almanac_handler as almanac_handler
 
 from colorama import Fore
 from game_logic.combat import combat_logic
@@ -25,13 +26,13 @@ class Engine:
             'coor_y': 0,
             'in_use': False
         }
-        self.game_over = False
+        self.end_exe = False
         self.start_player = StartPlayer() # to return the player
         self.start_enemies = StartEnemies() # to return the enemies
         self.items = StartItems() # to return the items
         self.map = None
         self.player = None
-        self.dungeon_floor = 30
+        self.dungeon_floor = 1
         self.dungeon_lvlup = True
         self.to_next_turn = 1
 
@@ -67,7 +68,7 @@ class Engine:
             if self.player.hp <= 0: # if the player is dead
                 hud.print_effect(f'\n[player] murió.')
                 hud.print_effect(f'\n\n\n-+-+-+-+- M O R T I S -+-+-+-+-\n', color=Fore.RED)
-                self.game_over = True
+                self.end_exe = True
             getpass('')
 
     def menu_actions(self, action):
@@ -107,7 +108,7 @@ class Engine:
             '0': lambda: None,  # No hacer nada
             '1': lambda: use_item(item, opt), # Usar objeto
             '2': lambda: drop_item(item, opt), # Soltar objeto
-            '3': lambda: hud.print_item_stats(item) # Inspeccionar objeto %
+            '3': lambda: hud.print_item_stats(item) # Inspeccionar objeto
         }
 
         text = "0. Nada.\n1. Usar.\n2. Soltar.\n3. Inspeccionar."
@@ -244,6 +245,7 @@ class Engine:
             # pick up the item
             self.player.inventory.append(thing)
             hud.print_effect(f'[{thing.name}] guardado en el inventario.\n')
+            almanac_handler.write_almanac(thing)
             self.update_map(axis, new_player_coor, player_x, player_y, '.')
         else:
             # handle inventory full or enemy encounter
