@@ -2,11 +2,11 @@
 
 import json
 
-PATH = 'data/encyclopedia/'
+PATH = 'data/encyclopedia/data/'
 
 def write_almanac(item):
     almanac_data = get_almanac()
-    if not (any(item.name == item["name"] for item in almanac_data)):
+    if not (any(item.name == thing["name"] for thing in almanac_data)):
 
         # mapping equipment attributes, excluding somes attributes
         item_data = {
@@ -24,5 +24,3 @@ def get_almanac():
         return file
     except:
         return []
-    
-

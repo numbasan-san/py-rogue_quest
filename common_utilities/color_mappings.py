@@ -1,5 +1,8 @@
 
 from colorama import Fore
+import config.setting as setting
+
+lan = setting.get_language()
 
 enemy_color_mapping = {
     1: Fore.GREEN, # beast
@@ -8,9 +11,9 @@ enemy_color_mapping = {
 }
 
 enemy_taxonomy_mapping = {
-    1: 'beast',
-    2: 'undead',
-    3: 'alchemical'
+    1: lan["taxonomy"]['beast'],
+    2: lan["taxonomy"]['undead'],
+    3: lan["taxonomy"]['alchemical']
 }
 
 rarity_color_mapping = {
@@ -22,9 +25,9 @@ rarity_color_mapping = {
 }
 
 rarity_name_mapping = {
-    1: 'common',
-    2: 'uncommon',
-    3: 'rare',
-    4: 'artefact',
-    5: 'mith',
+    1: lan["rarity"]['common'],
+    2: lan["rarity"]['uncommon'],
+    3: lan["rarity"]['rare'],
+    4: lan["rarity"]['artefact'],
+    5: lan["rarity"]['mith'],
 }

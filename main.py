@@ -9,6 +9,8 @@ from ui import hud
 from ui.titles.titles import get_big_title, get_little_title
 from common_utilities.utilities import utilities
 
+lan = setting.get_language()
+
 def new_game():
     eng = Engine()
     while not eng.end_exe:
@@ -18,9 +20,9 @@ def resume_game():
     pass
 
 def encyclopedia():
-    menu_text = '\n[1] Almanaque\n[2] Bestiario\n[0] Salir'
+    menu_text = lan["menu"]["encyclopedia"]
     hud.print_title_style(get_little_title() + menu_text)
-    action = utilities.opciones('\nElija una opción', ['1', '2', '0'])
+    action = utilities.opciones(f'\n{lan["game"]["choice"]["choice"]}', ['1', '2', '0'])
     action_mapping = {
         '1': almanac, 
         '2': bestiary, 
@@ -38,16 +40,25 @@ def almanac():
     almanac = almanac_handler.get_almanac()
     hud.print_almanac(almanac)
 
+def set_languaje():
+    opts = (hud.print_languaje_options())
+    
+    text = lan["game"]["choice"]["msg"]
+    lan_choiced = utilities.pregunta(text, 0, len(opts)) - 1
+    input(opts[lan_choiced])
+    setting.set_language(opts[lan_choiced])
+
 def main():
     os.system(setting.get_clear_cmd())
-    menu_text = '\n[1] Nueva Partida\n[2] # Continuar #\n[3] Enciclopedia\n[0] Salir'
+    menu_text = lan["menu"]["main"]
     hud.print_title_style(get_little_title() + menu_text)
 
-    action = utilities.opciones('\nElija una opción', ['1', '2', '3', '0'])
+    action = utilities.opciones(f'\n{lan["game"]["choice"]["choice"]}', ['1', '2', '3', '4', '0'])
     action_mapping = {
         '1': new_game, 
         # '2': resume_game, 
         '3': encyclopedia, 
+        '4': set_languaje,
         '0': exit, 
     }
 

@@ -1,7 +1,7 @@
 
 import json
 
-PATH = 'data/encyclopedia/'
+PATH = 'data/encyclopedia/data/'
 
 def write_bestiary(monster):
     bestiary_data = get_bestiary()

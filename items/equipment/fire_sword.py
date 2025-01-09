@@ -1,24 +1,27 @@
 
 import random
 from ui import hud
+import config.setting as sttng
 from items.basic_equip import BasicEquip
+
+lan = sttng.get_language()
 
 class FireSword(BasicEquip):
 
     # name, sprite, x, y, damage, critic, defense
     def __init__(self, x=1, y=1):
-        name = 'Espada de fuego'
+        name = lan["items"]["fire_sword"]["name"]
         sprite = '|'
         damage = 20
         critic = 10
         defense = 0
         to_player = True
         # name, sprite, x, y, damage, critic, defense, rarity, func, to_player, battle_effect, desc, nonfunc
-        super().__init__(name, sprite, x, y, damage, critic, defense, 5, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = "Puede causar quemaduras a quien se le ataque", nonfunc = self.nonuse_function)
+        super().__init__(name, sprite, x, y, damage, critic, defense, 5, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = lan["items"]["fire_sword"]["desc"], nonfunc = self.nonuse_function)
     
     def burn(self, victim): # sword's efect
         victim.hp -= 1
-        hud.print_effect(f'\n\n[{victim.name}] sufre por quemaduras. Vida reducida por 1 punto.')
+        hud.print_effect(f'\n\n[{victim.name}] {lan["items"]["fire_sword"]["effect"]}.')
 
     def use_function(self, player):
         
@@ -27,10 +30,10 @@ class FireSword(BasicEquip):
 
             # sword in equipment and buff to damage
             player.equipment['sword'] = self
-            hud.print_effect(f'\n[{self.name}] equipado.')
+            hud.print_effect(f'\n[{self.name}] {lan["game"]["equip_action"]["equipped"]}.')
             player.damage = (player.equipment['sword']).damage + player.damage
         else:
-            hud.print_effect(f'\n[{self.name}] ya equipado.')
+            hud.print_effect(f'\n[{self.name}] {lan["game"]["equip_action"]["already_equipped"]}.')
     
     def nonuse_function(self, player, msg):
         hud.print_effect(msg)
@@ -41,3 +44,4 @@ class FireSword(BasicEquip):
         var = random.randint(0, 10)
         if var > 8:
             victim.alter_status = [self.burn, 5]
+

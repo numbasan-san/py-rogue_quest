@@ -1,10 +1,11 @@
 
 import json
+import config.setting as setting
 from colorama import *
 from common_utilities import color_mappings
 from npc.enemy_move_ia import move
 
-info = json.load((open(f'npc/enemies/info/enemies_info.json', 'r', encoding='utf-8')))
+info = setting.get_language()
 
 class BasicEnemy:
 
@@ -15,7 +16,7 @@ class BasicEnemy:
         self.damage = damage
         self.defense = defense
         self.sprite = name[0]
-        self.descrip = info[(self.name).lower()]
+        self.descrip = info["enemies"][(self.name).lower()]
         self.x = x
         self.y = y
         self.exp = exp

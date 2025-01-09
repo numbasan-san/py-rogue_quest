@@ -1,10 +1,10 @@
-
 import random
 import ui.hud as hud
 import game_logic.input_handler as input_handler
 import data.map_things.json_handler as json_handler
 import game_logic.level_things.player_levels as levels
 import data.encyclopedia.almanac_handler as almanac_handler
+import config.setting as setting
 
 from colorama import Fore
 from game_logic.combat import combat_logic
@@ -35,6 +35,7 @@ class Engine:
         self.dungeon_floor = 1
         self.dungeon_lvlup = True
         self.to_next_turn = 1
+        self.msg_set = setting.get_language()
 
     def run(self):
         # time.sleep(5)
@@ -48,8 +49,8 @@ class Engine:
             # print(self.to_next_turn)
 
             # actions menu
-            text = "1. Mirar inventario.\n2. Moverse.\n3. Mirar Equipamento"
-            action = utilities.opciones('\nElija una de las opciones:\n' + text + '\nElección', ['1', '2', '3'])
+            text = self.msg_set["game"]["menus"]["action_menu"]["msg"]
+            action = utilities.opciones(text, ['1', '2', '3'])
             end_player_turn = self.menu_actions(action)
             # actions menu end #
 
@@ -66,7 +67,7 @@ class Engine:
                             enemy.move_ia(enemy, self.map, self.player)
 
             if self.player.hp <= 0: # if the player is dead
-                hud.print_effect(f'\n[player] murió.')
+                hud.print_effect(f"\n{self.msg_set['game']['player_dead']}.")
                 hud.print_effect(f'\n\n\n-+-+-+-+- M O R T I S -+-+-+-+-\n', color=Fore.RED)
                 self.end_exe = True
             getpass('')
@@ -87,16 +88,17 @@ class Engine:
     def handle_inventory(self):
         hud.print_full_inventory(self.player)
 
-        opt = utilities.pregunta('Elija qué usar (0 para nada): ', 0, len(self.player.inventory)) - 1
+        text = self.msg_set["game"]["choice"]["msg"]
+        opt = utilities.pregunta(text, 0, len(self.player.inventory)) - 1
         
         def use_item(item, opt):
             item_used = item.func(self.player) if item.to_player else item.func()
             if item_used or isinstance(item, BasicEquip):
                 self.player.inventory.pop(opt)
-                hud.print_effect(f'\n[{item.name}] fue utilizado.')
+                hud.print_effect(f'\n[{item.name}] {self.msg_set["game"]["inv_action"]["used"]}.')
 
         def drop_item(item, opt):
-            hud.print_effect(f'[{item.name}] se soltó.')
+            hud.print_effect(f'{self.msg_set["game"]["dropped"]} [{item.name}].')
             self.room_inv_save(item, self.player.x, self.player.y, True)
             self.player.inventory.pop(opt)
         
@@ -108,11 +110,10 @@ class Engine:
             '0': lambda: None,  # No hacer nada
             '1': lambda: use_item(item, opt), # Usar objeto
             '2': lambda: drop_item(item, opt), # Soltar objeto
-            '3': lambda: hud.print_item_stats(item) # Inspeccionar objeto
+            '3': lambda: hud.print_item_stats(item) # Inspeccionar objeto inv_action_msg
         }
 
-        text = "0. Nada.\n1. Usar.\n2. Soltar.\n3. Inspeccionar."
-        inv_action = utilities.opciones(f'\nElija qué hacer con [{item.color}{item.name}{Fore.RESET}]:\n{text}\nElección', ['0', '1', '2', '3'])
+        inv_action = utilities.opciones(f'\n{(self.msg_set["game"]["menus"]["inv_action"]["msg"])[0]} [{item.color}{item.name}{Fore.RESET}]:\n{(self.msg_set["game"]["menus"]["inv_action"]["msg"])[1]}\n{(self.msg_set["game"]["menus"]["inv_action"]["msg"])[2]}: ', ['0', '1', '2', '3'])
         action_options[inv_action]()
 
     def handle_equipment(self):
@@ -120,27 +121,27 @@ class Engine:
         sword, shield = self.player.equipment["sword"], self.player.equipment["shield"]
 
         if sword or shield:
-            equip_opt = utilities.opciones('Elija (0 para salir): ', ['0', '1', '2'])
+            equip_opt = utilities.opciones((self.msg_set["game"]["choice"]["equip_opt_msg"]), ['0', '1', '2'])
             equip = sword if equip_opt == '1' else shield
 
             if equip:
                 self.manage_equipment(equip)
             else:
-                hud.print_effect('Nada equipado.')
+                hud.print_effect(f"{self.msg_set['game']['nothing_equipped']}.")
         else:
-            hud.print_effect('Nada equipado.')
+            hud.print_effect(f"{self.msg_set['game']['nothing_equipped']}.")
 
     def manage_equipment(self, equip):
         text = "0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar."
-        equip_action = utilities.opciones(f'\nElija qué hacer con [{equip.color}{equip.name}{Fore.RESET}]:\n{text}\nElección', ['0', '1', '2', '3'])
+        equip_action = utilities.opciones(f'\n{(self.msg_set["game"]["choice"]["equip_action_msg"])[0]} [{equip.color}{equip.name}{Fore.RESET}]:\n{(self.msg_set["game"]["choice"]["equip_action_msg"])[1]}\n{(self.msg_set["game"]["choice"]["equip_action_msg"])[2]}', ['0', '1', '2', '3'])
         
         def unequip_item(equip):
-            equip.nonfunc(self.player, f'\n[{equip.name}] se desequipó.')
+            equip.nonfunc(self.player, f'\n{self.msg_set["game"]["no_equipped"]} [{equip.name}].')
             self.player.inventory.append(equip)
 
         def drop_equipped_item(equip):
             self.room_inv_save(equip, self.player.x, self.player.y, True)
-            equip.nonfunc(self.player, f'\n[{equip.name}] se soltó.')
+            equip.nonfunc(self.player, f'\n{self.msg_set["game"]["dropped"]} [{equip.name}].')
 
         action_mapping = {
             '0': lambda: None,
@@ -194,7 +195,7 @@ class Engine:
                 self.level_up_player(new_level)
 
     def level_up_player(self, new_level): # when the player get exp
-        hud.print_effect(f'\nEl jugador subió de nivel [{self.player.level}] a [{new_level}].\n')
+        hud.print_effect(f'\n{(self.msg_set["game"]["level_up"]["msg"])[0]} [{self.player.level}] {(self.msg_set["game"]["level_up"]["msg"])[1]} [{new_level}].')
 
         # when the player goes up more than one level at a time
         for lvl in range(self.player.level, new_level + 1):
@@ -244,7 +245,7 @@ class Engine:
         if len(self.player.inventory) < self.player.inv_limit and not isinstance(thing, BasicEnemy):
             # pick up the item
             self.player.inventory.append(thing)
-            hud.print_effect(f'[{thing.name}] guardado en el inventario.\n')
+            hud.print_effect(f'[{thing.name}] {(self.msg_set["game"]["inv_action"]["saved_in_inventory"])}.\n')
             almanac_handler.write_almanac(thing)
             self.update_map(axis, new_player_coor, player_x, player_y, '.')
         else:

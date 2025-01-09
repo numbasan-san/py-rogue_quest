@@ -117,13 +117,25 @@ def print_bestiary(bestiary):
                 f'- sprite: {beast["color"]}{beast["sprite"]}{Fore.RESET}.\n'
                 f'- taxonomy: {beast["color"]}{beast["taxonomy"]}{Fore.RESET}.\n'
                 f'- exp: {beast["exp"]}.\n'
-                f'- range: {beast["range"]}\n'
+                f'- range: {beast["range"]}.\n'
                 f'- hp: {beast["hp"]}.\n'
                 f'- damage: {beast["damage"]}.\n'
                 f'- defense: {beast["defense"]}.\n'
             )
     else: print(Fore.LIGHTYELLOW_EX + 'No hay registros.')
     getpass('')
+
+def print_languaje_options():
+    
+    list_files = (os.listdir('config/data/languajes'))
+    files_names = []
+    for i in list_files:
+        if i[0] != '_':
+            files_names.append(i.replace('.json', ''))
+    
+    for i, it in enumerate(files_names, start=1):
+        print(f'{i}. {it}.')
+    return files_names
 
 def print_title_style(s):
 

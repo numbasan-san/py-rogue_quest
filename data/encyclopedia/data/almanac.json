@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Espada de Fuego",
+        "sprite": "|",
+        "desc": "Puede causar quemaduras a quien se le ataque",
+        "color": "\u001b[35m",
+        "rarity": "mito",
+        "damage": 20,
+        "critic": 10,
+        "defense": 0
+    },
+    {
+        "name": "Escudo",
+        "sprite": ")",
+        "desc": "Es un escudo normal",
+        "color": "\u001b[37m",
+        "rarity": "com\u00fan",
+        "damage": 0,
+        "critic": 0,
+        "defense": 10
+    }
+]

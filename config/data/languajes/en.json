@@ -1,0 +1,127 @@
+{
+  "menu": {
+    "encyclopedia": "\n[1] Almanac\n[2] Bestiary\n[0] Close",
+    "main": "\n[1] New Game\n[2] # Continue #\n[3] Encyclopedia\n[4] Idiom\n[0] Close"
+  },
+  "game": {
+    "equip_action": {
+      "equipped": "equipped",
+      "already_equipped": "already equipped",
+      "unequipped": "has been unequipped"
+    },
+    "inv_action": {
+      "used": "was used",
+      "saved_in_inventory": "stored in inventory"
+    },
+    "level_up": {
+      "msg": ["The player leveled up", "to"]
+    },
+    "choice": {
+      "msg": "Choose what to use (0 for nothing): ",
+      "equip_opt_msg": "Choose (0 to exit): ",
+      "equip_action_msg": "Choose what to do with: 0. Nothing.\n1. Unequip.\n2. Inspect.\n3. Drop.\nChoice",
+      "choice": "Choice one option"
+    },
+    "menus": {
+      "action_menu": {
+        "msg": "\nChoose one of the options:\n1. View inventory.\n2. Move.\n3. View equipment.\nChoice"
+      },
+      "inv_action": {
+        "msg": ["Choose what to do with", "0. Nothing.\n1. Use.\n2. Drop.\n3. Inspect.", "Choice"]
+      }
+    },
+    "nothing_equipped": "Nothing equipped",
+    "dropped": "Dropped",
+    "no_equipped": "Unequipped",
+    "player_dead": "[player] died"
+  },
+  "items": {
+    "potion_power": {
+      "name": "Power Potion",
+      "desc": "Grants 10 attack",
+      "used": "Player's attack increased"
+    },
+    "potion": {
+      "name": "Potion",
+      "desc": "Recovers up to 10 health points",
+      "healed": "Health recovered by",
+      "no_heal": "You pause for a second and think: \"Better not waste it. I'm not injured right now\""
+    },
+    "stairs": {
+      "name": "Stairs",
+      "prompt": "Pass the stairs?",
+      "level_up": "The player went up the stairs, moving to the next level in the dungeon"
+    },
+    "fire_sword": {
+      "name": "Fire Sword",
+      "desc": "Can cause burns to those it attacks",
+      "effect": "suffers from burns. Health reduced by 1 point"
+    },
+    "shield_medusa": {
+      "name": "Medusa's Shield",
+      "desc": "Can turn attackers into stone",
+      "effect": "activated Medusa's curse on their attack and turned into stone"
+    },
+    "sword": {
+      "name": "Sword",
+      "desc": "It's a normal sword"
+    },
+    "shield": {
+      "name": "Shield",
+      "desc": "It's a normal shield"
+    }
+  },
+  "rarity": {
+    "common": "common",
+    "uncommon": "uncommon",
+    "rare": "rare",
+    "artefact": "artifact",
+    "mith": "myth"
+  },
+  "enemies": {
+    "aracne": {
+      "description": "A spider-like creature with a venomous bite. Known for its speed and agility in combat."
+    },
+    "banshee": {
+      "description": "A wailing spirit that haunts the living. Her scream can paralyze even the bravest warriors."
+    },
+    "cerberos": {
+      "description": "A three-headed dog guarding the gates of the underworld. Fierce and loyal to its master."
+    },
+    "dragon": {
+      "description": "A fearsome and ancient creature. Known for its immense power and destructive breath."
+    },
+    "fenrir": {
+      "description": "A giant wolf prophesied to bring the end of the world. Fearsome and unpredictable in battle."
+    },
+    "ghoul": {
+      "description": "A creature that feasts on the flesh of the dead. Often found in graveyards or abandoned crypts."
+    },
+    "jupia": {
+      "description": "A mysterious aquatic creature with the ability to summon storms. Dangerous near bodies of water."
+    },
+    "kelpie": {
+      "description": "A water spirit that lures travelers to watery graves. Known for its shape-shifting abilities."
+    },
+    "lugaru": {
+      "description": "A fearsome wolf-like beast. Highly territorial and vicious in battle."
+    },
+    "mokelembembe": {
+      "description": "A massive, dinosaur-like creature from the Congo basin. It is said to be both elusive and dangerous."
+    },
+    "nefelin": {
+      "description": "A mysterious feline creature that moves with the shadows. Its agility makes it difficult to catch."
+    },
+    "titan": {
+      "description": "A massive and powerful entity. Few can survive a battle with a Titan due to its overwhelming strength."
+    },
+    "yinn": {
+      "description": "A mystical being with powers over the forces of nature. It can control winds, storms, and natural elements."
+    }
+  },
+  "taxonomy": {
+    "undead": "undead",
+    "beast": "beast",
+    "alchemical": "alchemical"
+  }
+}

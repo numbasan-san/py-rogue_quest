@@ -1,0 +1,128 @@
+{
+    "menu": {
+      "encyclopedia": "\n[1] Almanaque\n[2] Bestiario\n[0] Salir",
+      "main": "\n[1] Nueva Partida\n[2] # Continuar #\n[3] Enciclopedia\n[4] Idioma\n[0] Salir"
+    },
+    "game": {
+        "equip_action": {
+            "equipped": "equipado",
+            "already_equipped": "ya está equipado",
+            "unequipped": "ha sido retirado del equipo"
+        },
+        "inv_action": {
+            "used": "fue utilizado",
+            "saved_in_inventory": "guardado en el inventario"
+        },
+        "level_up": {
+            "msg": ["El jugador subió de nivel", "a"]
+        },
+        "choice": {
+            "msg": "Elija qué usar (0 para nada): ",
+            "equip_opt_msg": "Elija (0 para salir): ",
+            "equip_action_msg": "Elija qué hacer con: 0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar.\nElección",
+            "choice": "Elija una opción"
+        },
+        "menus": {
+            "action_menu": {
+                "msg": "\nElija una de las opciones:\n1. Mirar inventario.\n2. Moverse.\n3. Mirar Equipamento.\nElección"
+            },
+            "inv_action": {
+                "msg": ["Elija qué hacer con", "0. Nada.\n1. Usar.\n2. Soltar.\n3. Inspeccionar.", "Elección"]
+            }
+        },
+        "nothing_equipped": "Nada equipado",
+        "dropped": "Se soltó",
+        "no_equipped": "Se desequipó",
+        "player_dead": "[player] murió"
+    },
+    "items": {
+      "potion_power": {
+        "name": "Poción de Poder",
+        "desc": "Otorga 10 de ataque",
+        "used": "Ataque del jugador aumentado"
+      },
+      "potion": {
+        "name": "Poción",
+        "desc": "Recupera 10 puntos de salud como máximo",
+        "healed": "Salud recuperada en",
+        "no_heal": "Te detienes un segundo y piensas: \"Mejor no lo desperdicio. No tengo heridas ahora\""
+      },
+      "stairs": {
+        "name": "Escalera",
+        "prompt": "¿Pasar la escalera?",
+        "level_up": "El jugador pasó por la escalera, cambiando de nivel en la mazmorra"
+      },
+      "fire_sword": {
+        "name": "Espada de Fuego",
+        "desc": "Puede causar quemaduras a quien se le ataque",
+        "effect": "sufre por quemaduras. Vida reducida por 1 punto"
+      },
+      "shield_medusa": {
+        "name": "Escudo de Medusa",
+        "desc": "Puede convertir en piedra a quien ataque al portador",
+        "effect": "activó la maldición de Medusa en su ataque y se convirtió en piedra"
+      },
+      "sword": {
+        "name": "Espada",
+        "desc": "Es una espada normal"
+      },
+      "shield": {
+        "name": "Escudo",
+        "desc": "Es un escudo normal"
+      }
+    },
+    "rarity": {
+      "common": "común",
+      "uncommon": "poco común",
+      "rare": "raro",
+      "artefact": "artefacto",
+      "mith": "mito"
+    },
+    "enemies":{
+      "aracne": {
+        "description": "Una criatura parecida a una araña con una mordida venenosa. Conocida por su velocidad y agilidad en combate."
+      },
+      "banshee": {
+        "description": "Un espíritu que llora y atormenta a los vivos. Su grito puede paralizar incluso a los guerreros más valientes."
+      },
+      "cerberos": {
+        "description": "Un perro de tres cabezas que guarda las puertas del inframundo. Feroz y leal a su amo."
+      },
+      "dragon": {
+        "description": "Una criatura temible y ancestral. Conocida por su inmenso poder y su aliento destructivo."
+      },
+      "fenrir": {
+        "description": "Un lobo gigante que, según la profecía, traerá el fin del mundo. Temible e impredecible en batalla."
+      },
+      "ghoul": {
+        "description": "Una criatura que se alimenta de la carne de los muertos. A menudo se encuentra en cementerios o criptas abandonadas."
+      },
+      "jupia": {
+        "description": "Una misteriosa criatura acuática con la habilidad de invocar tormentas. Peligrosa cerca de cuerpos de agua."
+      },
+      "kelpie": {
+        "description": "Un espíritu acuático que atrae a los viajeros a tumbas acuáticas. Conocido por su capacidad de cambiar de forma."
+      },
+      "lugaru": {
+        "description": "Una temible bestia parecida a un lobo. Altamente territorial y feroz en combate."
+      },
+      "mokelembembe": {
+        "description": "Una criatura masiva, parecida a un dinosaurio, originaria de la cuenca del Congo. Se dice que es tanto elusiva como peligrosa."
+      },
+      "nefelin": {
+        "description": "Una misteriosa criatura felina que se mueve entre las sombras. Su agilidad la hace difícil de atrapar."
+      },
+      "titan": {
+        "description": "Una entidad masiva y poderosa. Pocos pueden sobrevivir a una batalla contra un Titán debido a su fuerza abrumadora."
+      },
+      "yinn": {
+        "description": "Un ser místico con poderes sobre las fuerzas de la naturaleza. Puede controlar vientos, tormentas y elementos naturales."
+      }    
+    },
+    "taxonomy":{
+      "undead": "no muerto",
+      "beast": "bestia",
+      "alchemical": "alquímico"
+    }
+  }
+  
