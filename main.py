@@ -67,7 +67,7 @@ def main():
 
 
 if __name__ == '__main__':
-    if False:
+    if True:
         os.system(setting.get_clear_cmd())
         hud.print_title_style(f"{get_big_title()}Developed by numbasan-san")
         time.sleep(2)
