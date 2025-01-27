@@ -5,7 +5,7 @@ PATH = 'data/encyclopedia/data/'
 
 def write_bestiary(monster):
     bestiary_data = get_bestiary()
-    if not (any(monster.name == beast["name"] for beast in bestiary_data)):
+    if not (any(monster.code == beast["code"] for beast in bestiary_data)):
         enemy_data = {
             "code": monster.code
         }

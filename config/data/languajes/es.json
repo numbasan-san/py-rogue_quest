@@ -4,36 +4,41 @@
       "main": "\n[1] Nueva Partida\n[2] # Continuar #\n[3] Enciclopedia\n[4] Idioma\n[0] Salir"
     },
     "game": {
-        "equip_action": {
-            "equipped": "equipado",
-            "already_equipped": "ya está equipado",
-            "unequipped": "ha sido retirado del equipo"
-        },
-        "inv_action": {
-            "used": "fue utilizado",
-            "saved_in_inventory": "guardado en el inventario"
-        },
-        "level_up": {
-            "msg": ["El jugador subió de nivel", "a"]
-        },
-        "choice": {
-            "msg": "Elija qué usar (0 para nada): ",
-            "equip_opt_msg": "Elija (0 para salir): ",
-            "equip_action_msg": "Elija qué hacer con: 0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar.\nElección",
-            "choice": "Elija una opción"
-        },
-        "menus": {
-            "action_menu": {
-                "msg": "\nElija una de las opciones:\n1. Mirar inventario.\n2. Moverse.\n3. Mirar Equipamento.\nElección"
-            },
-            "inv_action": {
-                "msg": ["Elija qué hacer con", "0. Nada.\n1. Usar.\n2. Soltar.\n3. Inspeccionar.", "Elección"]
-            }
-        },
-        "nothing_equipped": "Nada equipado",
-        "dropped": "Se soltó",
-        "no_equipped": "Se desequipó",
-        "player_dead": "[player] murió"
+      "hud": {
+        "weapon": "Arma",
+        "shield": "Escudo",
+        "inventory": "Inventario"
+      },
+      "equip_action": {
+          "equipped": "equipado",
+          "already_equipped": "ya está equipado",
+          "unequipped": "ha sido retirado del equipo"
+      },
+      "inv_action": {
+          "used": "fue utilizado",
+          "saved_in_inventory": "guardado en el inventario"
+      },
+      "level_up": {
+          "msg": ["El jugador subió de nivel", "a"]
+      },
+      "choice": {
+          "msg": "Elija qué usar (0 para nada): ",
+          "equip_opt_msg": "Elija (0 para salir): ",
+          "equip_action_msg": "Elija qué hacer con: 0. Nada.\n1. Desequipar.\n2. Inspeccionar.\n3. Soltar.\nElección",
+          "choice": "Elija una opción"
+      },
+      "menus": {
+          "action_menu": {
+              "msg": "\nElija una de las opciones:\n1. Mirar inventario.\n2. Moverse.\n3. Mirar Equipamento.\nElección"
+          },
+          "inv_action": {
+              "msg": ["Elija qué hacer con", "0. Nada.\n1. Usar.\n2. Soltar.\n3. Inspeccionar.", "Elección"]
+          }
+      },
+      "nothing_equipped": "Nada equipado",
+      "dropped": "Se soltó",
+      "no_equipped": "Se desequipó",
+      "player_dead": "[player] murió"
     },
     "items": {
       "potion_power": {

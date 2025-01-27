@@ -1,6 +1,7 @@
 
 import shutil, os, sys, time
 
+import config.setting as setting
 from getpass import getpass
 from config import setting
 from items.basic_equip import BasicEquip
@@ -47,12 +48,12 @@ def print_hud(game_map, player):
           f'Lvl(Exp): {player.level}({player.exp}).')
 
     inventory_items = ', '.join(item.sprite for item in player.inventory)
-    print(f'Inventario: [{inventory_items}]')
+    print(f'{(setting.get_language())["game"]["hud"]["inventory"]}: [{inventory_items}]')
 
     sword = f'{(player.equipment["sword"]).color}{(player.equipment["sword"]).name}{Fore.RESET}' if player.equipment["sword"] else 'NO'
     shield = f'{(player.equipment["shield"]).color}{(player.equipment["shield"]).name}{Fore.RESET}' if player.equipment["shield"] else 'NO'
     
-    print(f'Arma: [{sword}]. Escudo: [{shield}].')
+    print(f'{(setting.get_language())["game"]["hud"]["weapon"]}: [{sword}]. {(setting.get_language())["game"]["hud"]["shield"]}: [{shield}].')
 
 def print_full_inventory(player):
     print('\n-----Inventario-----')

@@ -4,6 +4,11 @@
     "main": "\n[1] New Game\n[2] # Continue #\n[3] Encyclopedia\n[4] Idiom\n[0] Close"
   },
   "game": {
+    "hud": {
+      "weapon": "Weapon",
+      "shield": "Shield",
+      "inventory": "Inventory"
+    },
     "equip_action": {
       "equipped": "equipped",
       "already_equipped": "already equipped",
