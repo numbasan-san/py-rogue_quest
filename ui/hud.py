@@ -9,7 +9,9 @@ from items.basic_environment_item import BasicEnvironmentItem
 from npc.basic_enemy import BasicEnemy
 from world.start_world_elements import Player
 from common_utilities import *
+from data import classes_handler
 from colorama import init, Fore
+from common_utilities import color_mappings
 
 init(autoreset=True)
 
@@ -92,16 +94,17 @@ def print_almanac(almanac):
     print(f'\n---------------------ALMANAQUE---------------------')
     if len(almanac) >= 1:
         for item in almanac:
-            print(f'---------{item["color"]}{item["name"]}{Fore.RESET}-----------\n'
-                f'- description: {item["desc"]}.\n'
-                f'- sprite: {item["color"]}{item["sprite"]}{Fore.RESET}.\n'
-                f'- rarity: {item["color"]}{item["rarity"]}{Fore.RESET}.'
+            class_ = (classes_handler.get_class(item["code"]))()
+            print(f'\n---------{class_.color}{class_.name}{Fore.RESET}-----------\n'
+                f'- description: {class_.desc}.\n'
+                f'- sprite: {class_.color}{class_.sprite}{Fore.RESET}.\n'
+                f'- rarity: {(color_mappings.get_enemy_taxonomy_mapping()).get(class_.rarity)}{Fore.RESET}.'
             )
             try:
                 print(
-                f'- damage: {item["damage"]}.\n'
-                f'- defense: {item["defense"]}.\n'
-                f'- critic: {item["critic"]}.\n')
+                f'- damage: {class_.damage}.\n'
+                f'- defense: {class_.defense}.\n'
+                f'- critic: {class_.critic}.')
             except:
                 pass
     else:
@@ -112,15 +115,16 @@ def print_bestiary(bestiary):
     print(f'\n---------------------BESTIARIO---------------------')
     if len(bestiary) >= 1:
         for beast in bestiary:
-            print(f'---------{beast["color"]}{beast["name"]}{Fore.RESET}-----------\n'
-                f'- description: {beast["description"]}\n'
-                f'- sprite: {beast["color"]}{beast["sprite"]}{Fore.RESET}.\n'
-                f'- taxonomy: {beast["color"]}{beast["taxonomy"]}{Fore.RESET}.\n'
-                f'- exp: {beast["exp"]}.\n'
-                f'- range: {beast["range"]}.\n'
-                f'- hp: {beast["hp"]}.\n'
-                f'- damage: {beast["damage"]}.\n'
-                f'- defense: {beast["defense"]}.\n'
+            monster = (classes_handler.get_class(beast["code"]))()
+            print(f'---------{monster.color}{monster.name}{Fore.RESET}-----------\n'
+                f'- description: {monster.descrip}\n'
+                f'- sprite: {monster.color}{monster.sprite}{Fore.RESET}.\n'
+                f'- taxonomy: {monster.color}{(color_mappings.get_enemy_taxonomy_mapping()).get(monster.taxonomy)}{Fore.RESET}.\n'
+                f'- exp: {monster.exp}.\n'
+                f'- range: {monster.range}.\n'
+                f'- hp: {monster.hp}.\n'
+                f'- damage: {monster.damage}.\n'
+                f'- defense: {monster.defense}.\n'
             )
     else: print(Fore.LIGHTYELLOW_EX + 'No hay registros.')
     getpass('')

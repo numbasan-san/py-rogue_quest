@@ -1,38 +1,17 @@
 [
     {
-        "name": "MokeleMbembe",
-        "description": "Una criatura masiva, parecida a un dinosaurio, originaria de la cuenca del Congo. Se dice que es tanto elusiva como peligrosa.",
-        "hp": 100,
-        "damage": 5,
-        "defense": 10,
-        "exp": 15,
-        "range": 2,
-        "sprite": "M",
-        "color": "\u001b[32m",
-        "taxonomy": "bestia"
+        "code": "mm-M"
     },
     {
-        "name": "Cerberos",
-        "description": "Un perro de tres cabezas que guarda las puertas del inframundo. Feroz y leal a su amo.",
-        "hp": 100,
-        "damage": 5,
-        "defense": 10,
-        "exp": 15,
-        "range": 1,
-        "sprite": "C",
-        "color": "\u001b[32m",
-        "taxonomy": "bestia"
+        "code": "cb-C"
     },
     {
-        "name": "Nefelin",
-        "description": "Una misteriosa criatura felina que se mueve entre las sombras. Su agilidad la hace dif\u00edcil de atrapar.",
-        "hp": 100,
-        "damage": 5,
-        "defense": 10,
-        "exp": 15,
-        "range": 2,
-        "sprite": "N",
-        "color": "\u001b[90m",
-        "taxonomy": "no muerto"
+        "code": "nf-N"
+    },
+    {
+        "code": "yn-Y"
+    },
+    {
+        "code": "an-A"
     }
 ]

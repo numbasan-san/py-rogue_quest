@@ -1,10 +1,13 @@
+
 from npc.basic_enemy import BasicEnemy as Enemy
+import config.setting as setting
 
 class Banshee(Enemy):
 
     def __init__(self, x=1, y=1):
         # name, hp, damage, defense, x, y, exp, range, taxonomy/color
-        super().__init__('Banshee', 100, 5, 10, x, y, 20, 1, 2, strategy_ia=self.strategy_ia)
+        desc = (setting.get_language())["enemies"]["banshee"]["description"]
+        super().__init__('Banshee', 100, 5, 10, x, y, 20, 1, 2, "bs-B",desc=desc, strategy_ia=self.strategy_ia)
         self.hability_cooldown = 0
 
     def strategy_ia(self, game_map):

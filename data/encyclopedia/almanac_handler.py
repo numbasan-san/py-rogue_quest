@@ -6,11 +6,11 @@ PATH = 'data/encyclopedia/data/'
 
 def write_almanac(item):
     almanac_data = get_almanac()
-    if not (any(item.name == thing["name"] for thing in almanac_data)):
+    if not (any(item.code == thing["code"] for thing in almanac_data)):
 
         # mapping equipment attributes, excluding somes attributes
         item_data = {
-            k: v for k, v in vars(item).items() if k not in ['battle_effect', 'x', 'y', 'func', 'to_player', 'nonfunc']
+            "code": item.code
         }
 
         almanac_data.append(item_data)

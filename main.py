@@ -9,7 +9,8 @@ from ui import hud
 from ui.titles.titles import get_big_title, get_little_title
 from common_utilities.utilities import utilities
 
-lan = setting.get_language()
+def get_lan():
+ return setting.get_language()
 
 def new_game():
     eng = Engine()
@@ -20,9 +21,9 @@ def resume_game():
     pass
 
 def encyclopedia():
-    menu_text = lan["menu"]["encyclopedia"]
+    menu_text = (get_lan())["menu"]["encyclopedia"]
     hud.print_title_style(get_little_title() + menu_text)
-    action = utilities.opciones(f'\n{lan["game"]["choice"]["choice"]}', ['1', '2', '0'])
+    action = utilities.opciones(f'\n{(get_lan())["game"]["choice"]["choice"]}', ['1', '2', '0'])
     action_mapping = {
         '1': almanac, 
         '2': bestiary, 
@@ -34,7 +35,7 @@ def bestiary():
     os.system(setting.get_clear_cmd())
     bestiary = bestiary_handler.get_bestiary()
     hud.print_bestiary(bestiary)
-    
+
 def almanac():
     os.system(setting.get_clear_cmd())
     almanac = almanac_handler.get_almanac()
@@ -42,18 +43,16 @@ def almanac():
 
 def set_languaje():
     opts = (hud.print_languaje_options())
-    
-    text = lan["game"]["choice"]["msg"]
+    text = (get_lan())["game"]["choice"]["msg"]
     lan_choiced = utilities.pregunta(text, 0, len(opts)) - 1
-    input(opts[lan_choiced])
+    # input(opts[lan_choiced])
     setting.set_language(opts[lan_choiced])
 
 def main():
     os.system(setting.get_clear_cmd())
-    menu_text = lan["menu"]["main"]
+    menu_text = (get_lan())["menu"]["main"]
     hud.print_title_style(get_little_title() + menu_text)
-
-    action = utilities.opciones(f'\n{lan["game"]["choice"]["choice"]}', ['1', '2', '3', '4', '0'])
+    action = utilities.opciones(f'\n{(get_lan())["game"]["choice"]["choice"]}', ['1', '2', '3', '4', '0'])
     action_mapping = {
         '1': new_game, 
         # '2': resume_game, 
@@ -67,7 +66,7 @@ def main():
 
 
 if __name__ == '__main__':
-    if True:
+    if False:
         os.system(setting.get_clear_cmd())
         hud.print_title_style(f"{get_big_title()}Developed by numbasan-san")
         time.sleep(2)

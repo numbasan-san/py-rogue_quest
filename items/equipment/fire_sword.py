@@ -4,24 +4,22 @@ from ui import hud
 import config.setting as sttng
 from items.basic_equip import BasicEquip
 
-lan = sttng.get_language()
-
 class FireSword(BasicEquip):
 
     # name, sprite, x, y, damage, critic, defense
     def __init__(self, x=1, y=1):
-        name = lan["items"]["fire_sword"]["name"]
+        name = (sttng.get_language())["items"]["fire_sword"]["name"]
         sprite = '|'
         damage = 20
         critic = 10
         defense = 0
         to_player = True
         # name, sprite, x, y, damage, critic, defense, rarity, func, to_player, battle_effect, desc, nonfunc
-        super().__init__(name, sprite, x, y, damage, critic, defense, 5, func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = lan["items"]["fire_sword"]["desc"], nonfunc = self.nonuse_function)
+        super().__init__(name, sprite, x, y, damage, critic, defense, 5, "fs-|", func = self.use_function, to_player = to_player, battle_effect=self.use_alter_status, desc = (sttng.get_language())["items"]["fire_sword"]["desc"], nonfunc = self.nonuse_function)
     
     def burn(self, victim): # sword's efect
         victim.hp -= 1
-        hud.print_effect(f'\n\n[{victim.name}] {lan["items"]["fire_sword"]["effect"]}.')
+        hud.print_effect(f'\n\n[{victim.name}] {(sttng.get_language())["items"]["fire_sword"]["effect"]}.')
 
     def use_function(self, player):
         
@@ -30,10 +28,10 @@ class FireSword(BasicEquip):
 
             # sword in equipment and buff to damage
             player.equipment['sword'] = self
-            hud.print_effect(f'\n[{self.name}] {lan["game"]["equip_action"]["equipped"]}.')
+            hud.print_effect(f'\n[{self.name}] {(sttng.get_language())["game"]["equip_action"]["equipped"]}.')
             player.damage = (player.equipment['sword']).damage + player.damage
         else:
-            hud.print_effect(f'\n[{self.name}] {lan["game"]["equip_action"]["already_equipped"]}.')
+            hud.print_effect(f'\n[{self.name}] {(sttng.get_language())["game"]["equip_action"]["already_equipped"]}.')
     
     def nonuse_function(self, player, msg):
         hud.print_effect(msg)
